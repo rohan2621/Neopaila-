@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { Image } from '@imagekit/react';
 const NavBar = () => {
     const [open, setOpen] = useState(false);
 
@@ -7,7 +7,7 @@ const NavBar = () => {
         <div className=" relative z-20 flex items-center w-full font-sans h-16 md:h-20 justify-between ">
             {/* Logo */}
             <div className="flex gap-4 text-2xl font-bold items-center">
-                <img src="/Logo.png" className="w-12 h-12 rounded-md" alt="Logo" />
+                <Image urlEndpoint={import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT} src="/Logo.png" className="w-12 h-12 rounded-md" alt="Logo" />
                 <span>Neo-Paila</span>
             </div>
 
