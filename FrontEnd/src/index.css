@@ -8,13 +8,16 @@ body{
 }
 
 
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
+@keyframes waveMove {
+  from {
+    background-position-x: 0;
+  }
+
+  to {
+    background-position-x: 120px;
+  }
 }
 
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  /* IE and Edge */
-  scrollbar-width: none;
-  /* Firefox */
+.animate-wave {
+  animation: waveMove 6s linear infinite;
 }

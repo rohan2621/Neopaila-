@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.53.2",
+    "@gsap/react": "^2.1.2",
     "@imagekit/react": "^5.0.1",
     "@tailwindcss/vite": "^4.1.14",
+    "gsap": "^3.13.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4",
