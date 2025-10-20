@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+
+body{
+  font-family: "font-serif",font-serif;
+  width: 100vw;
+  overflow-x:hidden ;
+}
+
+
