@@ -11,7 +11,7 @@ const NavBar = () => {
                 <span>Neo-Paila</span>
             </div>
 
-            {/* Mobile Menu Button */}#
+            {/* Mobile Menu Button */}
             <div className='md:hidden'>
 
                 <button
@@ -20,18 +20,25 @@ const NavBar = () => {
                 >
                     {open ? '✕' : '≡'}
                 </button>
-                <div className={`w-full z-20 h-screen flex flex-col items-center justify-center absolute top-16 transition-all ease-in-out ${open ? '-right-0' : '-right-[150%]'}`}>
-                    meny
+                <div className={`w-full z-20 h-screen flex gap-8 flex-col items-center  justify-center absolute top-16 font-medium transition-all ease-in-out ${open ? '-right-0' : '-right-[150%]'}`}>
+                <a className='cursor-pointer' href="/">Home</a>
+                <a className='cursor-pointer' href="/">Trending</a>
+                <a className='cursor-pointer' href="/">Most Popular</a>
+                <a className='cursor-pointer' href="/">About</a>
+                <a className='cursor-pointer' href="/">
+                    <button className='py-2 px-4 rounded-lg text-white bg-[#912121]'>
+                        🙌 &nbsp;&nbsp;Login
+                    </button></a>
                 </div>
             </div>
             {/* Desktop Menu */}
             <div className="hidden md:flex gap-8 xl:gap-12 items-center  font-medium">
-                <a href="/">Home</a>
-                <a href="/">Trending</a>
-                <a href="/">Most Popular</a>
-                <a href="/">About</a>
-                <a href="/">
-                    <button className='py-2 px-4 rounded-lg text-white bg-[#912121]'>
+                <a className='cursor-pointer' href="/">Home</a>
+                <a className='cursor-pointer' href="/">Trending</a>
+                <a className='cursor-pointer' href="/">Most Popular</a>
+                <a className='cursor-pointer' href="/">About</a>
+                <a className='cursor-pointer' href="/">
+                    <button className='py-2 px-4 cursor-pointer rounded-lg text-white bg-[#912121]'>
                         🙌 &nbsp;&nbsp;Login
                     </button></a>
 
