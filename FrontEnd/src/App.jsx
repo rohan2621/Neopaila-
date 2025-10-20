@@ -11,10 +11,7 @@ function App() {
       <Canvas >
         {/* Navbar */}
         <NavBar />
-        {/* breadgumbs */}
-        {/* Intrroductuin */}
-        {/* Featured */}
-        {/* Footer */}
+      
       </Canvas>
     </>
   )

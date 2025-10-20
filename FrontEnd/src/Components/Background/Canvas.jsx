@@ -2,7 +2,7 @@ import React from 'react'
 
 const Canvas = ({ children, }) => {
     return (
-        <div className="relative min-h-screen bg-[#fcf7e7] overflow-hidden">
+        <div className="relative min-h-screen bg-[#fffefc] overflow-hidden">
             {/* Fine paper dots */}
             <div className="absolute inset-0 bg-[radial-gradient(rgba(0,0,0,0.05)_0.5px,transparent_0.5px)] bg-[size:12px_12px]" />
 
