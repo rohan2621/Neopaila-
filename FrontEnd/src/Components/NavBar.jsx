@@ -7,85 +7,104 @@ import { useGSAP } from "@gsap/react";
 
 const NavBar = () => {
   const [open, setOpen] = useState(false);
-    useGSAP(() => {
-        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-        const logo = document.querySelector(".NavLogo");
-        if (logo) {
-          tl.from(logo, { opacity: 0, scale: 0, duration: 1});
-        }
-    },[])
-  // ✅ Animate desktop links and login button safely
+
+  // --- Logo animation on mount
   useGSAP(() => {
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-    // Animate all desktop links
-    const links = gsap.utils.toArray(".Nav_I");
-    if (links.length > 0) {
-      tl.from(links, {
-        opacity: 0,
-        y: -20,
-        duration: 0.8,
-        stagger: 0.15,
-      }),[];
-    }
-
-    // Animate desktop button (if it exists)
-    const navBtn = document.querySelector(".Nav_Btn");
-    if (navBtn) {
-      tl.from(
-        navBtn,
-        {
-          opacity: 0,
-          scale: 0.8,
-          y: -10,
-          duration: 0.8,
-          ease: "back.out(1.7)",
-        },
-        "-=0.4",[] // overlap with previous animation
-      ),[]
-    }
-
-    // Animate wrapper container (#btn_1)
-    const btnWrapper = document.querySelector("#btn_1");
-    if (btnWrapper) {
-      tl.from(
-        btnWrapper,
-        {
-          opacity: 0,
-          x: 30,
-          duration: 0.8,
-        },
-        "-=0.4",[]
-      );
-    }
+    gsap.from(".NavLogo", {
+      opacity: 0,
+      scale: 0.8,
+      duration: 1,
+      ease: "power3.out",
+    });
   }, []);
 
-  // ✅ Animate mobile menu when open
+  // --- Desktop links animation
+  useGSAP(() => {
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+    tl.from(".Nav_I", {
+      opacity: 0,
+      y: -20,
+      duration: 0.8,
+      stagger: 0.15,
+    }).from(
+      ".Nav_Btn",
+      {
+        opacity: 0,
+        scale: 0.8,
+        duration: 0.6,
+      },
+      "-=0.4"
+    );
+  }, []);
+
+  // --- Mobile menu animation
   useGSAP(
     () => {
+      const menu = document.querySelector(".MobileMenu");
+      if (!menu) return;
+
       if (open) {
-        const items = gsap.utils.toArray(".Nav_II");
-        if (items.length > 0) {
-          gsap.from(items, {
-            opacity: 0,
-            y: 25,
-            duration: 0.8,
-            stagger: 0.15,
+        // Start fully visible white background
+        gsap.set(menu, {
+          display: "flex",
+          backgroundColor: "#ffffff",
+          opacity: 1,
+        });
+
+        // Slide in
+        gsap.fromTo(
+          menu,
+          { xPercent: 100, opacity: 0 },
+          {
+            xPercent: 0,
+            opacity: 1,
+            duration: 0.6,
             ease: "power3.out",
-          });
-        }
+          }
+        );
+
+        // Animate menu items
+        gsap.fromTo(
+          ".Nav_II",
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.12,
+            delay: 0.1,
+            ease: "power3.out",
+          }
+        );
+      } else {
+        // Slide out
+        gsap.to(menu, {
+          xPercent: 100,
+          opacity: 0,
+          duration: 0.5,
+          ease: "power2.inOut",
+          onComplete: () => gsap.set(menu, { display: "none" }),
+        });
       }
     },
-    { dependencies: [open], revertOnUpdate: true },[]
-    );
-     const handleLogoHover = (e) => gsap.to(e.currentTarget, { scale: 1.15, duration: 0.3, ease: "power3.out" });
-  const handleLogoLeave = (e) => gsap.to(e.currentTarget, { scale: 1, duration: 0.3, ease: "power3.out" });
+    { dependencies: [open] }
+  );
+
+  const handleLogoHover = (e) =>
+    gsap.to(e.currentTarget, { scale: 1.15, duration: 0.3, ease: "power3.out" });
+  const handleLogoLeave = (e) =>
+    gsap.to(e.currentTarget, { scale: 1, duration: 0.3, ease: "power3.out" });
 
   return (
-    <div className="relative z-20 flex items-center w-full font-sans h-16 md:h-20 justify-between">
+    <div className="relative z-30 flex items-center w-full font-sans h-16 md:h-20 justify-between">
       {/* Logo */}
-      <Link to="/" id="logo" className="flex gap-4 text-2xl font-bold items-center NavLogo"  onMouseEnter={handleLogoHover}
-        onMouseLeave={handleLogoLeave}>
+      <Link
+        to="/"
+        id="logo"
+        className="flex gap-4 text-2xl font-bold items-center NavLogo"
+        onMouseEnter={handleLogoHover}
+        onMouseLeave={handleLogoLeave}
+      >
         <Image
           urlEndpoint={import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT}
           src="/Logo.png"
@@ -95,19 +114,22 @@ const NavBar = () => {
         <span>Neo-Paila</span>
       </Link>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Toggle */}
       <div className="md:hidden">
         <button
-          className="cursor-pointer text-4xl"
+          className="cursor-pointer text-4xl z-40 relative"
           onClick={() => setOpen((prev) => !prev)}
         >
           {open ? "✕" : "≡"}
         </button>
 
+        {/* Mobile Menu */}
         <div
-          className={`w-full z-20 h-screen flex gap-8 flex-col items-center justify-center absolute top-16 font-medium bg-white transition-all duration-500 ease-in-out ${
-            open ? "right-0 opacity-100" : "-right-[150%] opacity-0"
-          }`}
+          className="MobileMenu fixed top-0 right-0 w-full h-screen flex flex-col gap-8 items-center justify-center font-medium z-30"
+          style={{
+            backgroundColor: "#ffffff", // solid white by default
+            display: "none", // hidden initially
+          }}
         >
           <Link className="cursor-pointer Nav_II" to="/">
             Home
@@ -124,7 +146,7 @@ const NavBar = () => {
 
           <SignedOut>
             <Link className="cursor-pointer Nav_II" to="/login">
-              <button className="py-[6px] btn flex gap-2 items-center justify-between px-4 cursor-pointer rounded-4xl text-white bg-[#540000]">
+              <button className="py-[6px] flex gap-2 items-center justify-between px-4 cursor-pointer rounded-4xl text-white bg-[#540000]">
                 <p>Login</p>
               </button>
             </Link>

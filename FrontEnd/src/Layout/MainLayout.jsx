@@ -6,8 +6,11 @@ export const MainLayout = () => {
   return (
     <Canvas >
     {/* Navbar */}
-          <NavBar />
-        <Outlet/>
+      <NavBar />
+      <div className='relative z-20'>
+        <Outlet />
+
+      </div>
     {/* breadgumbs */}
     {/* Intrroductuin */}
     {/* Featured */}
