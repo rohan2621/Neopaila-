@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import gsap from "gsap";
 import MainCate from "../Components/MainCate";
 import { useGSAP } from "@gsap/react";
+import { FeaturedPost } from "../Components/FeaturedPost";
 
 const HomePage = () => {
   const containerRef = useRef(null);
@@ -136,6 +137,9 @@ const HomePage = () => {
       <div className="">
       <MainCate/>
 
+      </div>
+      <div>
+        <FeaturedPost/>
       </div>
     </div>
   );
