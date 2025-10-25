@@ -111,7 +111,7 @@ const NavBar = () => {
           className="w-12 h-12 rounded-xl shadow-md"
           alt="Logo"
         />
-        <span>Neo-Paila</span>
+        <span>Neo-Paila </span>
       </Link>
 
       {/* Mobile Menu Toggle */}

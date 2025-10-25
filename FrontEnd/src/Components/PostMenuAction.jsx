@@ -5,7 +5,7 @@ import { RiDeleteBin6Line } from 'react-icons/ri';
 export const PostMenuAction = () => {
   return (
       <div>
-          <h1>Actions</h1>
+          <h1>Action</h1>
           <div className='flex items-center gap-2 py-2 text-sm cursor-pointer'>
               <FaBookmark />
               <span>Save this Post</span>
