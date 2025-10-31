@@ -35,9 +35,13 @@ export const FeaturedPost = () => {
           </div>
         </div>
         {/* third */}
-        <div className='flex justify-between gap-4 lg:h-1/3'></div> 
+        <div className='flex justify-between gap-4 lg:h-1/3'>
+          
+        </div> 
         {/* fourth */}
-        <div className='flex justify-between gap-4 lg:h-1/3'></div>
+        <div className='flex justify-between gap-4 lg:h-1/3'>
+        
+        </div>
       </div>
     </div>
   )
