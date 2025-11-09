@@ -1,13 +1,21 @@
 import React, { useState } from "react";
 import { Image } from "@imagekit/react";
 import { Link } from "react-router";
-import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, useAuth, UserButton } from "@clerk/clerk-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { useEffect } from "react";
 
 const NavBar = () => {
   const [open, setOpen] = useState(false);
-
+  const { getToken } = useAuth();
+  useEffect(() => {
+    getToken().then((token) => {
+      console.log(token);
+      
+    })
+  }, [])
+  
   // --- Logo animation on mount
   useGSAP(() => {
     gsap.from(".NavLogo", {
