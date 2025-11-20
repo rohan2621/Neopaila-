@@ -28,3 +28,27 @@ body{
 }.ql-editor{
   border: none !important;
 }
+.quill-content img {
+  max-width: 100%;
+  border-radius: 10px;
+  margin: 12px 0;
+}
+
+.quill-content p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+.quill-content h1,
+.quill-content h2,
+.quill-content h3 {
+  font-weight: bold;
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.quill-content ul,
+.quill-content ol {
+  padding-left: 1.4rem;
+  margin-bottom: 1rem;
+}

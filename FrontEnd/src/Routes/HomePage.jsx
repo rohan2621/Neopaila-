@@ -80,7 +80,7 @@ const HomePage = () => {
   </h1>
 
   {/* Circular animated text */}
-        <div className="
+        <Link to={"/write"} className="
   circ
     relative 
     flex 
@@ -130,7 +130,7 @@ const HomePage = () => {
       <line x1="12" y1="2" x2="12" y2="18" />
       <polyline points="5 11 12 18 19 11" />
     </svg>
-  </div>
+  </Link>
 </div>
 
 

@@ -6,16 +6,20 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useEffect } from "react";
 
+
+
 const NavBar = () => {
   const [open, setOpen] = useState(false);
   const { getToken } = useAuth();
-  useEffect(() => {
-    getToken().then((token) => {
-      console.log(token);
-      
-    })
-  }, [])
   
+  // session token
+  
+  useEffect(  () => {
+    getToken({ template: "default" }).then((token) => {
+      
+      // console.log(token); 
+    });
+  }, []);
   // --- Logo animation on mount
   useGSAP(() => {
     gsap.from(".NavLogo", {
@@ -115,7 +119,8 @@ const NavBar = () => {
       >
         <Image
           urlEndpoint={import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT}
-          src="/Logo.png"
+          src="/Logo.pnimport { async } from './../../../BackEnd/node_modules/jose/dist/browser/jwe/compact/decrypt';
+g"
           className="w-12 h-12 rounded-xl shadow-md"
           alt="Logo"
         />

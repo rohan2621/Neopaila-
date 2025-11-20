@@ -12,7 +12,13 @@ import { Write } from './Routes/Write.jsx';
 import LoginPage from './Routes/LoginPage.jsx';
 import { RegisterPage } from './Routes/RegisterPage.jsx';
 import { ClerkProvider } from '@clerk/clerk-react'
-
+import { ToastContainer, toast } from 'react-toastify';
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query'
+const queryClient = new QueryClient()
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
 if (!PUBLISHABLE_KEY) {
@@ -48,8 +54,10 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-      
-    <RouterProvider router={router} />
-     </ClerkProvider>
+    <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <ToastContainer position='bottom-right'/>
+      </QueryClientProvider>
+      </ClerkProvider>
   </StrictMode>,
 )
