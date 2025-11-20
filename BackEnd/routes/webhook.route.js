@@ -4,7 +4,7 @@ import { clerkWebHook } from "../controllers/webhook.controller.js";
 
 const router = express.Router();
 
-// Clerk webhooks need raw body and NO auth guard
+// Clerk requires the raw body (not parsed JSON)
 router.post(
   "/clerk",
   bodyParser.raw({ type: "application/json" }),
