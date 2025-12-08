@@ -49,6 +49,11 @@ export const deletePost = async (req, res) => {
   try {
     const userId = await getUserIdFromToken(req);
     if (!userId) return res.status(401).json({ error: "Not authorized" });
+    const role = req.auth.sessionClaims?.metadata?.role;
+    if (role == "admin") {
+      await Post.findOneAndDelete(req.params.id);
+      return res.status(200).json({ message: "Post has been deleted" });
+    }
 
     const user = await User.findOne({ clerkUserId: userId });
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -68,6 +73,36 @@ export const deletePost = async (req, res) => {
   }
 };
 
+export const featurePost = async (req, res) => {
+  try {
+    const userId = await getUserIdFromToken(req);
+    const postId = req.body.postId;
+    if (!userId) return res.status(401).json({ error: "Not authorized" });
+    const role = req.auth.sessionClaims?.metadata?.role;
+    if (role != "admin") {
+      return res.status(403).json({ message: "You cannot featured posts" });
+    }
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+    const isFeatured = post.isFeatured;
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      {
+        isFeatured: !isFeatured,
+      },
+      {
+        new: true,
+      }
+    );
+    res.status(200).json(updatedPost);
+  } catch (err) {
+    console.error("Delete Post Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
 // -------------------------
 // GET ALL POSTS
 // -------------------------
@@ -76,13 +111,60 @@ export const getPosts = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
 
-    const posts = await Post.find()
-      .limit(limit)
-      .skip((page - 1) * limit) // FIXED
-      .populate("user", "username")
-      .sort({ createdAt: -1 });
+    let query = {};
+    let sortObj = { createdAt: -1 };
 
-    const totalPosts = await Post.countDocuments();
+    const { cat, author, search, sort, featured } = req.query;
+
+    // CATEGORY
+    if (cat) query.category = cat;
+
+    // FEATURED
+    if (featured === "true") query.isFeatured = true;
+
+    // SEARCH
+    if (search) {
+      query.title = { $regex: search, $options: "i" };
+    }
+
+    // AUTHOR
+    if (author) {
+      const user = await User.findOne({ username: author }).select("_id");
+      if (!user) return res.status(404).json("User not found");
+      query.user = user._id;
+    }
+
+    // SORTING
+    if (sort) {
+      switch (sort) {
+        case "newest":
+          sortObj = { createdAt: -1 };
+          break;
+        case "oldest":
+          sortObj = { createdAt: 1 };
+          break;
+        case "popular":
+          sortObj = { visit: -1 };
+          break;
+        case "trending":
+          sortObj = { createdAt: -1 };
+          query.createdAt = {
+            $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+          };
+          break;
+      }
+    }
+
+    // Fetch Posts
+    const posts = await Post.find(query)
+      .sort(sortObj)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("user", "username");
+
+    // Count filtered posts
+    const totalPosts = await Post.countDocuments(query);
+
     const hasMore = page * limit < totalPosts;
 
     res.status(200).json({ posts, hasMore });

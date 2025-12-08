@@ -52,7 +52,7 @@ app.use(clerkMiddleware());
 app.get("/", (req, res) => res.send("Hello World"));
 
 app.use("/users", userRouter);
-app.use("/comment", commentRouter);
+app.use("/comments", commentRouter);
 app.use("/posts", postRouter);
 
 /* -------------------------------
