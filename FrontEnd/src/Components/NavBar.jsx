@@ -6,18 +6,15 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useEffect } from "react";
 
-
-
 const NavBar = () => {
   const [open, setOpen] = useState(false);
   const { getToken } = useAuth();
-  
+
   // session token
-  
-  useEffect(  () => {
+
+  useEffect(() => {
     getToken({ template: "default" }).then((token) => {
-      
-      // console.log(token); 
+      // console.log(token);
     });
   }, []);
   // --- Logo animation on mount
@@ -103,7 +100,11 @@ const NavBar = () => {
   );
 
   const handleLogoHover = (e) =>
-    gsap.to(e.currentTarget, { scale: 1.15, duration: 0.3, ease: "power3.out" });
+    gsap.to(e.currentTarget, {
+      scale: 1.15,
+      duration: 0.3,
+      ease: "power3.out",
+    });
   const handleLogoLeave = (e) =>
     gsap.to(e.currentTarget, { scale: 1, duration: 0.3, ease: "power3.out" });
 
@@ -119,11 +120,11 @@ const NavBar = () => {
       >
         <Image
           urlEndpoint={import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT}
-          src="/Logo.pnimport { async } from './../../../BackEnd/node_modules/jose/dist/browser/jwe/compact/decrypt';
-g"
+          src="Logo.png"
           className="w-12 h-12 rounded-xl shadow-md"
           alt="Logo"
         />
+
         <span>Neo-Paila </span>
       </Link>
 

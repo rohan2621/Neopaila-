@@ -5,9 +5,7 @@ import { format } from "timeago.js";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-
 const PostListItem = ({ post }) => {
-
   return (
     <div className="flex flex-col mb-12 xl:flex-row gap-6 xl:gap-8">
       {/* Image */}
@@ -32,11 +30,20 @@ const PostListItem = ({ post }) => {
 
         <div className="flex flex-wrap items-center gap-1 text-gray-500 text-xs sm:text-sm">
           <span>Written by</span>
-          <Link className="text-blue-800 hover:underline">
+          <Link
+            className="text-blue-800 hover:underline"
+            to={`/posts?author=${post.user?.username}`}
+          >
             {post.user?.username || "Unknown Author"}
           </Link>
           <span>on</span>
-          <Link className="text-blue-800 hover:underline">{post.category}</Link>
+          <Link
+            to={`/posts?cat=${post.category}`}
+            className="text-blue-800 hover:underline"
+          >
+            {post.category}
+          </Link>
+
           <span>{format(post.createdAt)}</span>
         </div>
 

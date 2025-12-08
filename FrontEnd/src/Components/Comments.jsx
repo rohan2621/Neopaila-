@@ -1,23 +1,99 @@
-import React from 'react'
-import Comment from './Comment'
+import React from "react";
+import { useNavigate } from "react-router";
+import Comment from "./Comment";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { format } from "timeago.js";
+import axios from "axios";
+import { useAuth, useUser } from "@clerk/clerk-react";
+import { toast } from "react-toastify";
+const fetchComments = async (postId) => {
+  const res = await axios.get(
+    `${import.meta.env.VITE_API_URL}/comments/${postId}`
+  );
+  return res.data;
+};
+const Comments = ({ postId }) => {
+  const { user } = useUser();
+  console.log(user);
 
-const Comments = () => {
+  const { getToken } = useAuth();
+  const navigate = useNavigate();
+  const { isPending, error, data } = useQuery({
+    queryKey: ["comments", postId],
+    queryFn: () => fetchComments(postId),
+  });
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: async (newComment) => {
+      const token = await getToken();
+      return axios.post(
+        `${import.meta.env.VITE_API_URL}/comments/${postId}`,
+        newComment,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    },
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+    },
+    onError: (err) => {
+      toast.error("Error creating comment:");
+    },
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = {
+      desc: formData.get("desc"),
+    };
+    mutation.mutate(data);
+  };
+
   return (
-    <div className='flex flex-col  gap-8  lg:w-3/5'>
-          <h1 className='text-xl text-gray-500 underline'> Comments</h1>
-          <div className='flex items-center justify-between gap-8 w-full'>
-              <textarea name="" placeholder='Write a comment.....' id="" className='w-full rounded-xl'></textarea>
-              <button className='bg-[#540000] px-4 py-3 text-white font-medium rounded-xl'>Send</button>
-          </div>
-      <Comment/>
-      <Comment/>
-      <Comment/>
-      <Comment/>
-      <Comment/>
-      <Comment/>
-      <Comment/>
-    </div>
-  )
-}
+    <div className="flex flex-col  gap-8  lg:w-3/5 mb-12">
+      <h1 className="text-xl text-gray-500 underline"> Comments</h1>
+      <form
+        onSubmit={handleSubmit}
+        className="flex items-center justify-between gap-8 w-full"
+      >
+        <textarea
+          name="desc"
+          placeholder="Write a comment..."
+          className="w-full px-3 py-3 rounded-xl border-2 border-transparent
+             focus:border-black/10 shadow-md focus:shadow-lg
+             transition-all duration-300 outline-none"
+        ></textarea>
 
-export default Comments
+        <button className="bg-[#540000] px-4 py-3 text-white font-medium rounded-xl">
+          Send
+        </button>
+      </form>
+      {isPending ? (
+        "Loading"
+      ) : error ? (
+        "Error loading comments!"
+      ) : (
+        <>
+          {mutation.isPending && (
+            <Comment
+              comment={{
+                desc: `${mutation.variables.desc} (Sending...)`,
+                createdAt: new Date(),
+                user: { img: user.imageUrl, username: user.username },
+              }}
+            />
+          )}
+          {data.map((comment) => (
+            <Comment key={comment._id} comment={comment} postId={postId} />
+          ))}
+        </>
+      )}
+    </div>
+  );
+};
+
+export default Comments;
