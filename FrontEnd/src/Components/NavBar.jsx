@@ -1,207 +1,205 @@
-import React, { useState } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import { Image } from "@imagekit/react";
-import { Link } from "react-router";
-import { SignedIn, SignedOut, useAuth, UserButton } from "@clerk/clerk-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { useEffect } from "react";
+import { useRef, useState } from "react";
+import { Menu, X } from "lucide-react";
 
-const NavBar = () => {
+const navLinks = [
+  { label: "Home", to: "/" },
+  { label: "About", to: "/about" },
+  { label: "Features", to: "/features" },
+  { label: "Blog", to: "/blogs" },
+  { label: "Pricing", to: "/pricing" },
+];
+
+const NavBar = ({ lightboxOpen }) => {
+  const logoRef = useRef(null);
   const [open, setOpen] = useState(false);
-  const { getToken } = useAuth();
 
-  // session token
-
-  useEffect(() => {
-    getToken({ template: "default" }).then((token) => {
-      // console.log(token);
-    });
-  }, []);
-  // --- Logo animation on mount
+  /* -------------------------
+     NAV ENTRANCE
+  ------------------------- */
   useGSAP(() => {
-    gsap.from(".NavLogo", {
-      opacity: 0,
-      scale: 0.8,
-      duration: 1,
-      ease: "power3.out",
-    });
-  }, []);
-
-  // --- Desktop links animation
-  useGSAP(() => {
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    tl.from(".Nav_I", {
-      opacity: 0,
-      y: -20,
-      duration: 0.8,
-      stagger: 0.15,
-    }).from(
-      ".Nav_Btn",
-      {
+    if (!lightboxOpen) {
+      gsap.from(".nav-wrapper", {
+        y: -24,
         opacity: 0,
-        scale: 0.8,
-        duration: 0.6,
-      },
-      "-=0.4"
-    );
-  }, []);
+        duration: 0.7,
+        ease: "power4.out",
+      });
+    }
+  }, [lightboxOpen]);
 
-  // --- Mobile menu animation
-  useGSAP(
-    () => {
-      const menu = document.querySelector(".MobileMenu");
-      if (!menu) return;
-
-      if (open) {
-        // Start fully visible white background
-        gsap.set(menu, {
-          display: "flex",
-          backgroundColor: "#ffffff",
-          opacity: 1,
-        });
-
-        // Slide in
-        gsap.fromTo(
-          menu,
-          { xPercent: 100, opacity: 0 },
-          {
-            xPercent: 0,
-            opacity: 1,
-            duration: 0.6,
-            ease: "power3.out",
-          }
-        );
-
-        // Animate menu items
-        gsap.fromTo(
-          ".Nav_II",
-          { opacity: 0, y: 30 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            stagger: 0.12,
-            delay: 0.1,
-            ease: "power3.out",
-          }
-        );
-      } else {
-        // Slide out
-        gsap.to(menu, {
-          xPercent: 100,
-          opacity: 0,
-          duration: 0.5,
-          ease: "power2.inOut",
-          onComplete: () => gsap.set(menu, { display: "none" }),
-        });
-      }
-    },
-    { dependencies: [open] }
-  );
-
-  const handleLogoHover = (e) =>
-    gsap.to(e.currentTarget, {
-      scale: 1.15,
+  /* -------------------------
+     LOGO HOVER (DESKTOP ONLY)
+  ------------------------- */
+  const logoEnter = () => {
+    if (window.innerWidth < 768) return;
+    gsap.to(logoRef.current, {
+      scale: 1.08,
+      rotate: -3,
       duration: 0.3,
       ease: "power3.out",
     });
-  const handleLogoLeave = (e) =>
-    gsap.to(e.currentTarget, { scale: 1, duration: 0.3, ease: "power3.out" });
+  };
+
+  const logoLeave = () => {
+    if (window.innerWidth < 768) return;
+    gsap.to(logoRef.current, {
+      scale: 1,
+      rotate: 0,
+      duration: 0.6,
+      ease: "elastic.out(1, 0.4)",
+    });
+  };
+
+  /* -------------------------
+     LIQUID NAV ITEM HOVER
+     (UNCHANGED)
+  ------------------------- */
+  const handleEnter = (e) => {
+    if (lightboxOpen || window.innerWidth < 768) return;
+    const inner = e.currentTarget.querySelector(".nav-inner");
+    gsap.set(inner, { x: 0, y: 0, scaleX: 1, scaleY: 1 });
+  };
+
+  const handleMove = (e) => {
+    if (lightboxOpen || window.innerWidth < 768) return;
+    const inner = e.currentTarget.querySelector(".nav-inner");
+    const bounds = e.currentTarget.getBoundingClientRect();
+
+    const dx = e.clientX - (bounds.left + bounds.width / 2);
+    const dy = e.clientY - (bounds.top + bounds.height / 2);
+
+    const distanceX = Math.abs(dx) / (bounds.width / 2);
+    const distanceY = Math.abs(dy) / (bounds.height / 2);
+
+    const scaleX = 1 + Math.min(distanceX * 0.25, 0.35);
+    const scaleY = 1 + Math.min(distanceY * 0.25, 0.35);
+
+    gsap.to(inner, {
+      x: dx * 0.25,
+      y: dy * 0.25,
+      scaleX,
+      scaleY,
+      duration: 0.25,
+      ease: "power3.out",
+      overwrite: true,
+    });
+  };
+
+  const handleLeave = (e) => {
+    if (lightboxOpen || window.innerWidth < 768) return;
+    const inner = e.currentTarget.querySelector(".nav-inner");
+
+    gsap.to(inner, {
+      x: 0,
+      y: 0,
+      scaleX: 1,
+      scaleY: 1,
+      duration: 0.35,
+      ease: "elastic.out(1, 0.4)",
+      overwrite: true,
+    });
+  };
 
   return (
-    <div className="relative z-30 flex items-center w-full font-sans h-16 md:h-20 justify-between">
-      {/* Logo */}
-      <Link
-        to="/"
-        id="logo"
-        className="flex gap-4 text-2xl font-bold items-center NavLogo"
-        onMouseEnter={handleLogoHover}
-        onMouseLeave={handleLogoLeave}
-      >
-        <Image
-          urlEndpoint={import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT}
-          src="Logo.png"
-          className="w-12 h-12 rounded-xl shadow-md"
-          alt="Logo"
-        />
-
-        <span>Neo-Paila </span>
-      </Link>
-
-      {/* Mobile Menu Toggle */}
-      <div className="md:hidden">
-        <button
-          className="cursor-pointer text-4xl z-40 relative"
-          onClick={() => setOpen((prev) => !prev)}
-        >
-          {open ? "✕" : "≡"}
-        </button>
-
-        {/* Mobile Menu */}
-        <div
-          className="MobileMenu fixed top-0 right-0 w-full h-screen flex flex-col gap-8 items-center justify-center font-medium z-30"
-          style={{
-            backgroundColor: "#ffffff", // solid white by default
-            display: "none", // hidden initially
-          }}
-        >
-          <Link className="cursor-pointer Nav_II" to="/">
-            Home
-          </Link>
-          <Link className="cursor-pointer Nav_II" to="/">
-            Trending
-          </Link>
-          <Link className="cursor-pointer Nav_II" to="/">
-            Most Popular
-          </Link>
-          <Link className="cursor-pointer Nav_II" to="/">
-            About
-          </Link>
-
-          <SignedOut>
-            <Link className="cursor-pointer Nav_II" to="/login">
-              <button className="py-[6px] flex gap-2 items-center justify-between px-4 cursor-pointer rounded-4xl text-white bg-[#540000]">
-                <p>Login</p>
-              </button>
-            </Link>
-          </SignedOut>
-
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </div>
-      </div>
-
-      {/* Desktop Menu */}
-      <div className="hidden md:flex gap-8 xl:gap-12 items-center font-medium">
-        <Link className="cursor-pointer Nav_I" to="/">
-          Home
-        </Link>
-        <Link className="cursor-pointer Nav_I" to="/">
-          Trending
-        </Link>
-        <Link className="cursor-pointer Nav_I" to="/">
-          Most Popular
-        </Link>
-        <Link className="cursor-pointer Nav_I" to="/">
-          About
-        </Link>
-
-        <div id="btn_1">
-          <SignedOut>
-            <Link className="cursor-pointer Nav_Btn" to="/login">
-              <button className="py-[6px] flex gap-2 items-center justify-between px-4 cursor-pointer rounded-4xl text-white bg-[#540000] hover:scale-105 transition-transform duration-300">
-                <p>Login</p>
-              </button>
-            </Link>
-          </SignedOut>
-
-          <SignedIn>
-            <div className="Nav_Btn">
-              <UserButton />
+    <div
+      className={`fixed top-3 left-1/2 z-50 w-full -translate-x-1/2 px-4
+      ${lightboxOpen ? "pointer-events-none" : ""}`}
+    >
+      <div className="nav-wrapper mx-auto max-w-7xl">
+        <nav className="pointer-events-auto flex items-center justify-between rounded-full border border-black/5 bg-white/80 px-6 py-3 shadow-md backdrop-blur">
+          {/* LOGO */}
+          <Link
+            to="/"
+            onMouseEnter={logoEnter}
+            onMouseLeave={logoLeave}
+            className="flex items-center gap-3 font-semibold select-none"
+          >
+            <div ref={logoRef} className="flex items-center gap-3">
+              <Image
+                urlEndpoint={import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT}
+                src="Logo.png"
+                alt="Neo-Paila"
+                className="h-9 w-9 rounded-full"
+              />
+              <span className="text-lg tracking-tight">Neo-Paila</span>
             </div>
-          </SignedIn>
-        </div>
+          </Link>
+
+          {/* DESKTOP NAV */}
+          <div className="hidden md:flex items-center gap-6">
+            {navLinks.map((link) => (
+              <div
+                key={link.label}
+                onMouseEnter={handleEnter}
+                onMouseMove={handleMove}
+                onMouseLeave={handleLeave}
+                className="relative h-10 w-[96px]"
+              >
+                <div className="nav-inner absolute inset-0 flex items-center justify-center rounded-full">
+                  <NavLink
+                    to={link.to}
+                    className={({ isActive }) =>
+                      `text-sm font-medium transition-colors ${
+                        isActive
+                          ? "text-gray-900"
+                          : "text-gray-700 hover:text-gray-900"
+                      }`
+                    }
+                  >
+                    {link.label}
+                  </NavLink>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* RIGHT */}
+          <div className="flex items-center gap-3">
+            <SignedOut>
+              <Link
+                to="/login"
+                className="hidden md:block rounded-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+              >
+                Join
+              </Link>
+            </SignedOut>
+
+            <SignedIn>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+
+            {/* MOBILE MENU BUTTON */}
+            <button
+              onClick={() => setOpen((p) => !p)}
+              className="md:hidden rounded-full p-2 hover:bg-gray-100 transition"
+            >
+              {open ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </nav>
+
+        {/* MOBILE MENU */}
+        {open && (
+          <div className="mt-3 rounded-3xl bg-white shadow-xl p-6 md:hidden">
+            <div className="flex flex-col gap-4">
+              {navLinks.map((link) => (
+                <NavLink
+                  key={link.label}
+                  to={link.to}
+                  onClick={() => setOpen(false)}
+                  className="text-sm font-medium text-gray-800"
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

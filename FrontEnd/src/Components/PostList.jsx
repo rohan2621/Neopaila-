@@ -4,7 +4,9 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { motion } from "framer-motion";
 
+// fetch posts
 const fetchPost = async (pageParam, searchParams) => {
   const params = Object.fromEntries([...searchParams]);
   params.page = pageParam;
@@ -28,8 +30,8 @@ const PostList = () => {
       lastPage.hasMore ? pages.length + 1 : undefined,
   });
 
-  if (status === "loading") return "Loading...";
-  if (status === "error") return "Error fetching posts";
+  if (status === "loading") return <p>Loading...</p>;
+  if (status === "error") return <p>Error fetching posts</p>;
 
   const allPosts = data?.pages?.flatMap((p) => p.posts) || [];
 
@@ -38,16 +40,48 @@ const PostList = () => {
       dataLength={allPosts.length}
       next={fetchNextPage}
       hasMore={!!hasNextPage}
-      loader={<h4>Loading more posts...</h4>}
+      loader={<h4 className="text-center">Loading more posts...</h4>}
       endMessage={
-        <p>
-          <b>All post loaded!</b>
+        <p className="text-center font-medium">
+          <b>All posts loaded!</b>
         </p>
       }
     >
-      {allPosts.map((post) => (
-        <PostListItem key={post._id} post={post} />
-      ))}
+      {/* WRAPPER TO PREVENT X-OVERFLOW */}
+      <div className="flex flex-col gap-6 min-w-0 overflow-x-hidden">
+        {allPosts.map((post, index) => {
+          const fromLeft = index % 2 === 0;
+
+          return (
+            <motion.div
+              key={post._id}
+              className="overflow-hidden min-w-0"
+              initial={{
+                opacity: 0,
+                x: fromLeft ? -80 : 80,
+              }}
+              whileInView={{
+                opacity: 1,
+                x: 0,
+              }}
+              exit={{
+                opacity: 0,
+                x: fromLeft ? -80 : 80,
+              }}
+              transition={{
+                duration: 0.6,
+                ease: "easeOut",
+              }}
+              viewport={{
+                once: false,
+                amount: 0.3,
+              }}
+            >
+              <PostListItem post={post} />
+            </motion.div>
+          );
+        })}
+      </div>
     </InfiniteScroll>
   );
 };

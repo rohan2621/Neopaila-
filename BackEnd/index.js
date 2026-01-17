@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { clerkMiddleware } from "@clerk/express";
+import imageRouter from "./routes/image.route.js";
 
 // Routes
 import userRouter from "./routes/user.route.js";
@@ -54,6 +55,8 @@ app.get("/", (req, res) => res.send("Hello World"));
 app.use("/users", userRouter);
 app.use("/comments", commentRouter);
 app.use("/posts", postRouter);
+
+app.use("/images", imageRouter);
 
 /* -------------------------------
    Error handler

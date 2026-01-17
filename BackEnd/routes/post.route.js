@@ -1,17 +1,44 @@
 import express from "express";
-import { getPosts } from "../controllers/post.controller.js";
-import { getPost } from "../controllers/post.controller.js";
-import { createPost } from "../controllers/post.controller.js";
-import { deletePost } from "../controllers/post.controller.js";
-import { uploadAuth } from "../controllers/post.controller.js";
-import { featurePost } from "../controllers/post.controller.js";
+import {
+  getPosts,
+  getPost,
+  createPost,
+  deletePost,
+  uploadAuth,
+  featurePost,
+  deleteUpload, // <- import the updated one
+} from "../controllers/post.controller.js";
+
+import increaseVisit from "../middleware/increaseVisit.js";
+
 const router = express.Router();
 
+/* ------------------------- */
+// IMAGEKIT AUTH
 router.get("/upload-auth", uploadAuth);
-router.get("/", getPosts);
-router.get("/:slug", getPost);
-router.post("/", createPost);
-router.delete("/:id", deletePost);
+
+/* ------------------------- */
+// DELETE SINGLE IMAGE (POST)
+router.post("/uploads/delete", deleteUpload);
+
+/* ------------------------- */
+// FEATURE POST
 router.patch("/feature", featurePost);
+
+/* ------------------------- */
+// GET POSTS
+router.get("/", increaseVisit, getPosts);
+
+/* ------------------------- */
+// CREATE POST
+router.post("/", createPost);
+
+/* ------------------------- */
+// DELETE POST
+router.delete("/:id", deletePost);
+
+/* ------------------------- */
+// GET POST BY SLUG (MUST BE LAST)
+router.get("/:slug", getPost);
 
 export default router;

@@ -1,145 +1,217 @@
 import React, { useEffect, useRef } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+
 import MainCate from "../Components/MainCate";
-import { useGSAP } from "@gsap/react";
-import { FeaturedPost } from "../Components/FeaturedPost";
+import FeaturedPost from "../Components/FeaturedPost";
+import NeoPailaTestimonial from "../Components/NeoPailaTestimonial";
+import NeoPailaFooter from "../Components/NeoPailaFooter";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const HomePage = () => {
   const containerRef = useRef(null);
-  useGSAP(() => {
-    gsap.from(".heading", {
-      y: -70,
-      opacity: 0,
-      duration: 0.5,
-      ease:'power1.inOut'
-    })
-    gsap.from(".circ", { scale:.5 ,opacity:0,duration:0.7,ease:'power1.inOut'})
-  })
+
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Circular text rotation
+      // ---------------- Heading Animation ----------------
+      const headingTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".heading",
+          start: "top 90%",
+          toggleActions: "play reverse play reverse",
+        },
+      });
+
+      headingTimeline
+        // Animate heading container
+        .from(".heading", {
+          autoAlpha: 0,
+          y: 40,
+          duration: 1,
+          ease: "power3.out",
+        })
+        // Animate "Stories"
+        .from(
+          ".red-word",
+          {
+            scale: 0.8,
+            autoAlpha: 0,
+            y: -10,
+            duration: 0.8,
+            ease: "back.out(1.7)",
+          },
+          "-=0.5"
+        )
+        // Animate "World"
+        .from(
+          ".blue-word",
+          {
+            scale: 0.8,
+            autoAlpha: 0,
+            y: -10,
+            duration: 0.8,
+            ease: "back.out(1.7)",
+          },
+          "-=0.6"
+        );
+
+      // ---------------- Infinite Animations ----------------
       gsap.to(".circular-text", {
         rotation: 360,
         duration: 12,
         repeat: -1,
         ease: "none",
         transformOrigin: "50% 50%",
-        transformBox: "fillBox",
       });
 
-      // Heading color words animation
-      const tl = gsap.timeline({ defaults: { ease: "back.out(1.7)" } });
-      tl.fromTo(
-        ".red-word",
-        { scale: 0, opacity: 0, y: -23 },
-        { scale: 1, duration: 1.4, opacity: 1, color: "#ff0000" },"-=0.5"
-      ).fromTo(
-        ".blue-word",
-        { scale: 0, opacity: 0, y: -23 },
-        { scale: 1, duration: `.8`, opacity: 1, color: "#0058ff" },
-        "-=0.5"
-      );
-
-      // Arrow subtle bounce
       gsap.to(".arrow", {
-        y: -5,
+        y: -6,
         duration: 0.8,
         repeat: -1,
         yoyo: true,
         ease: "power1.inOut",
       });
-    }, containerRef); // scope animations to containerRef
-   
-    return () => ctx.revert(); // cleanup on unmount
+
+      // ---------------- Section Animations ----------------
+      const sections = gsap.utils.toArray(".scroll-section");
+
+      sections.forEach((section) => {
+        const children = section.querySelectorAll(".animate-child");
+
+        // Fade in section
+        gsap.fromTo(
+          section,
+          { autoAlpha: 0, y: 40 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top bottom",
+              end: "bottom top",
+              toggleActions: "play reverse play reverse",
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+
+        // Fade in children one by one
+        if (children.length) {
+          gsap.fromTo(
+            children,
+            { autoAlpha: 0, y: 40 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.8,
+              stagger: 0.2,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: section,
+                start: "top bottom",
+                toggleActions: "play reverse play reverse",
+              },
+            }
+          );
+        }
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
-    <div ref={containerRef} className="mt-4 flex flex-col gap-6 md:gap-10">
-      {/* Breadcrumbs */}
-      <div className="flex gap-2 text-sm">
-        <Link to={"/"} className="hover:text-blue-600 transition-colors">Home</Link>
-        <span className="text-[10px] flex items-center">●</span>
-        <span className="text-blue-900">Blogs and Articles</span>
+    <div ref={containerRef} className="flex flex-col gap-8 md:gap-12">
+      <div className="px-4 md:px-8 lg:px-16 xl:px-24 2xl:px-32">
+        {/* Breadcrumbs */}
+        <div className="flex gap-2 text-sm px-4 md:px-12 pt-6 scroll-section animate-child">
+          <Link to="/" className="hover:text-blue-600 transition-colors">
+            Home
+          </Link>
+          <span className="text-[10px] flex items-center">●</span>
+          <span className="text-blue-900">Blogs and Articles</span>
+        </div>
+
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row items-start xl:items-center justify-between gap-10 px-4 md:px-12 py-10 scroll-section">
+          <h1
+            style={{ fontFamily: "'Times New Roman', Times, serif" }}
+            className="heading text-3xl sm:text-4xl md:text-5xl text-center lg:text-left leading-tight max-w-[700px]"
+          >
+            Create{" "}
+            <span className="red-word text-red-600 inline-block">Stories</span>
+            <span className="block relative ml-24 mt-6">
+              from Around the{" "}
+              <span className="blue-word text-blue-700 inline-block">
+                World
+              </span>
+            </span>
+          </h1>
+
+          <Link
+            to="/write"
+            className="relative flex justify-center items-center mx-auto lg:mx-0 w-[240px] h-[240px]"
+          >
+            <svg
+              className="absolute w-full h-full drop-shadow-md"
+              viewBox="0 0 100 100"
+            >
+              <defs>
+                <path
+                  id="circlePath"
+                  d="M50,50 m-35,0 a35,35 0 1,1 70,0 a35,35 0 1,1 -70,0"
+                />
+              </defs>
+              <text
+                className="circular-text"
+                fontSize="7"
+                fill="#111"
+                fontWeight="bold"
+              >
+                <textPath xlinkHref="#circlePath">
+                  Discover Your Own stories with Others &nbsp; NeoPaila
+                </textPath>
+              </text>
+            </svg>
+
+            <svg
+              className="arrow absolute rotate-[221deg] w-10 h-10 text-red-600"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <line x1="12" y1="2" x2="12" y2="18" />
+              <polyline points="5 11 12 18 19 11" />
+            </svg>
+          </Link>
+        </div>
+
+        {/* Content */}
+        <div className="px-4 md:px-12 lg:px-20 flex flex-col gap-8">
+          <div className="scroll-section animate-child">
+            <MainCate />
+          </div>
+
+          <div className="scroll-section animate-child">
+            <FeaturedPost />
+          </div>
+        </div>
       </div>
 
-      {/* Header + Circular Text */}
-     {/* Header + Circular Text */}
-<div className="flex flex-col lg:flex-row  items-start xl:items-center justify-between gap-10 md:gap-16 lg:gap-20 h-auto lg:h-[280px] px-6 md:px-12 lg:px-20 py-10">
-  {/* Heading */}
-  <h1
-    style={{ fontFamily: "'Times New Roman', Times, serif" }}
-    className="text-3xl heading sm:text-4xl md:text-5xl text-center lg:text-left leading-tight max-w-[700px]"
-  >
-    Create{" "}
-    <span className="red-word text-red-600 opacity-0">Stories</span>
-    <span className="block relative sm:left-[5ch] md:left-[7ch] lg:left-[9ch] mt-2 md:mt-4">
-      from Around the{" "}
-      <span className="blue-word text-blue-700 opacity-0">World</span>
-    </span>
-  </h1>
-
-  {/* Circular animated text */}
-        <Link to={"/write"} className="
-  circ
-    relative 
-    flex 
-    justify-center 
-    items-center 
-    mx-auto  lg:mx-0
-    w-[180px] h-[180px] 
-    sm:w-[200px] sm:h-[200px] 
-    md:w-[220px] md:h-[220px] 
-    lg:w-[240px] lg:h-[240px] 
-    xl:w-[260px] xl:h-[260px]
-    shrink-0 
-    lg:ml-10 xl:ml-20
-  ">
-    <svg
-      className="absolute w-full h-full drop-shadow-md"
-      viewBox="0 0 100 100"
-    >
-      <defs>
-        <path
-          id="circlePath"
-          d="M50,50 m-35,0 a35,35 0 1,1 70,0 a35,35 0 1,1 -70,0"
-        />
-      </defs>
-      <text
-        className="circular-text"
-        fontSize="7"
-        fill="#111"
-        fontWeight="bold"
-      >
-        <textPath xlinkHref="#circlePath" startOffset="0">
-          Discover Your Own stories with Others &nbsp;&nbsp; NeoPaila
-        </textPath>
-      </text>
-    </svg>
-
-    {/* Center arrow */}
-    <svg
-      className="arrow absolute rotate-[221deg] w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-red-600 drop-shadow-lg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="12" y1="2" x2="12" y2="18" />
-      <polyline points="5 11 12 18 19 11" />
-    </svg>
-  </Link>
-</div>
-
-
-      <div className="">
-      <MainCate/>
-
+      {/* Testimonial */}
+      <div className="scroll-section animate-child">
+        <NeoPailaTestimonial />
       </div>
-      <div>
-        <FeaturedPost/>
+
+      {/* Footer */}
+      <div className="scroll-section animate-child">
+        <NeoPailaFooter />
       </div>
     </div>
   );

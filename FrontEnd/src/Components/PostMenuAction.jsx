@@ -1,5 +1,5 @@
 import React from "react";
-import { FaBookmark, FaRegBookmark } from "react-icons/fa";
+import { FaBookmark, FaRegBookmark, FaFacebookF } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { MdOutlineStarOutline, MdOutlineStarPurple500 } from "react-icons/md";
 import { useNavigate } from "react-router";
@@ -16,26 +16,23 @@ export const PostMenuAction = ({ post }) => {
 
   const isAdmin = user?.publicMetadata?.role === "admin";
 
-  // Fetch Saved Posts
+  /* ---------------- SAVED POSTS ---------------- */
   const { data: savedPosts, isLoading } = useQuery({
     queryKey: ["savedPosts"],
     queryFn: async () => {
       const token = await getToken();
       const res = await axios.get(
         `${import.meta.env.VITE_API_URL}/users/saved`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       return res.data;
     },
     enabled: !!user,
   });
 
-  // Check if saved
   const isSaved = savedPosts?.includes(post._id);
 
-  // Delete Post
+  /* ---------------- DELETE POST ---------------- */
   const deleteMutation = useMutation({
     mutationFn: async () => {
       const token = await getToken();
@@ -53,7 +50,7 @@ export const PostMenuAction = ({ post }) => {
     },
   });
 
-  // Save Post
+  /* ---------------- SAVE POST ---------------- */
   const saveMutation = useMutation({
     mutationFn: async () => {
       const token = await getToken();
@@ -68,7 +65,7 @@ export const PostMenuAction = ({ post }) => {
     },
   });
 
-  // Feature Post (Admin)
+  /* ---------------- FEATURE POST ---------------- */
   const featureMutation = useMutation({
     mutationFn: async () => {
       const token = await getToken();
@@ -92,68 +89,65 @@ export const PostMenuAction = ({ post }) => {
   };
 
   return (
-    <div>
-      <h1 className="mb-4 mt-8 text-sm font-medium">Action</h1>
+    <div
+      className="
+        mt-8
+        text-sm
+        [&_svg]:text-[14px]
+        [&_img]:w-4
+        [&_img]:h-4
+      "
+    >
+      <h1 className="mb-4 font-medium">Action</h1>
 
       {/* SAVE */}
       {isLoading ? (
         <p className="text-sm">Loading...</p>
       ) : (
         <div
-          className="flex items-center gap-2 py-2 text-sm cursor-pointer"
+          className="flex items-center gap-2 py-2 cursor-pointer"
           onClick={handleSave}
         >
-          {saveMutation.isPending ? (
-            isSaved ? (
-              <FaBookmark />
-            ) : (
-              <FaRegBookmark />
-            )
-          ) : isSaved ? (
-            <FaBookmark />
-          ) : (
-            <FaRegBookmark />
-          )}
-
+          {isSaved ? <FaBookmark /> : <FaRegBookmark />}
           <span>{isSaved ? "Unsave Post" : "Save this Post"}</span>
-
           {saveMutation.isPending && (
             <span className="text-xs text-gray-500">saving...</span>
           )}
         </div>
       )}
 
-      {/* FEATURE (ADMIN ONLY) */}
+      {/* FEATURE (ADMIN) */}
       {isAdmin && (
         <div
-          className="flex items-center gap-2 py-2 text-sm cursor-pointer"
+          className="flex items-center gap-2 py-2 cursor-pointer"
           onClick={() => featureMutation.mutate()}
         >
-          {featureMutation.isPending ? (
-            <MdOutlineStarOutline size="1.4em" />
-          ) : post.isFeatured ? (
-            <MdOutlineStarPurple500 size="1.4em" />
+          {post.isFeatured ? (
+            <MdOutlineStarPurple500 />
           ) : (
-            <MdOutlineStarOutline size="1.4em" />
+            <MdOutlineStarOutline />
           )}
-
           <span>Feature</span>
-
           {featureMutation.isPending && (
             <span className="text-xs text-gray-500">in progress</span>
           )}
         </div>
       )}
 
-      {/* DELETE (OWNER OR ADMIN) */}
+      {/* SHARE (FB EXAMPLE) */}
+      <div className="flex items-center gap-2 py-2 cursor-pointer">
+        <FaFacebookF />
+        <span>Share on Facebook</span>
+      </div>
+
+      {/* DELETE */}
       {user && (post.user?.username === user?.username || isAdmin) && (
         <div
-          className="flex items-center gap-2 py-2 text-sm cursor-pointer"
+          className="flex items-center gap-2 py-2 cursor-pointer text-red-600"
           onClick={() => deleteMutation.mutate()}
         >
-          <RiDeleteBin6Line size="1.22em" color="red" />
+          <RiDeleteBin6Line />
           <span>Delete this Post</span>
-
           {deleteMutation.isPending && (
             <span className="text-xs text-gray-500">in progress</span>
           )}

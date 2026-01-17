@@ -47,20 +47,17 @@ const SideMenu = () => {
         <Link className="underline" to="/posts">
           All
         </Link>
-        <Link className="underline" to="/posts?cat=web-design">
-          Web Design
+        <Link className="underline" to="/posts?cat=general">
+          General
         </Link>
-        <Link className="underline" to="/posts?cat=development">
-          Development
+        <Link className="underline" to="/posts?cat=cultural">
+          Cultural
         </Link>
-        <Link className="underline" to="/posts?cat=databases">
-          Databases
+        <Link className="underline" to="/posts?cat=history">
+          History
         </Link>
-        <Link className="underline" to="/posts?cat=seo">
-          Search Engine
-        </Link>
-        <Link className="underline" to="/posts?cat=marketing">
-          Marketing
+        <Link className="underline" to="/posts?cat=heritage">
+          Heritage
         </Link>
       </div>
     </div>
