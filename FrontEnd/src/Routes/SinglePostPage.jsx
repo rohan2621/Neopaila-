@@ -113,14 +113,7 @@ export const SinglePostPage = () => {
             <p className="text-sm text-gray-500">
               {data.user?.bio || "No bio available."}
             </p>
-            <div className="flex gap-2">
-              <Link>
-                <Img w={20} src={"facebook.svg"} />
-              </Link>
-              <Link>
-                <Img w={20} src={"instagram.svg"} />
-              </Link>
-            </div>
+            0
           </div>
 
           <PostMenuAction post={data} />

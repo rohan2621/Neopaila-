@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -7,9 +7,8 @@ import {
   useMapEvents,
 } from "react-leaflet";
 import L from "leaflet";
-import "leaflet/dist/leaflet.css";
 
-// Fix default marker icon
+// Marker icon fix (you already import this globally too, safe to keep once)
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -20,44 +19,63 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
-const LocationMarker = ({ setLocation, coverImage }) => {
-  const [position, setPosition] = useState(null);
-
+const LocationMarker = ({ location, setLocation, coverImage }) => {
   useMapEvents({
     click(e) {
-      setPosition(e.latlng);
-      setLocation(e.latlng);
+      setLocation({
+        lat: e.latlng.lat,
+        lng: e.latlng.lng,
+      });
     },
   });
 
-  return position ? (
-    <Marker position={position}>
+  if (!location) return null;
+
+  return (
+    <Marker position={[location.lat, location.lng]}>
       {coverImage && (
         <Popup>
           <img
             src={coverImage}
             alt="Cover"
-            className="w-32 h-20 object-cover rounded"
+            className="h-20 w-32 rounded object-cover"
           />
         </Popup>
       )}
     </Marker>
-  ) : null;
+  );
 };
 
-const MapPicker = ({ setLocation, coverImage }) => (
-  <MapContainer
-    center={[27.7172, 85.324]} // Default: Kathmandu
-    zoom={13}
-    scrollWheelZoom={true}
-    style={{ height: "300px", width: "100%" }}
-  >
-    <TileLayer
-      attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
-      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-    />
-    <LocationMarker setLocation={setLocation} coverImage={coverImage} />
-  </MapContainer>
-);
+const MapPicker = ({ setLocation, coverImage, initialLocation }) => {
+  const [location, setInternalLocation] = useState(initialLocation || null);
+
+  useEffect(() => {
+    if (location) setLocation(location);
+  }, [location, setLocation]);
+
+  return (
+    <div className="h-[300px] w-full overflow-hidden rounded-xl border shadow-md">
+      <MapContainer
+        center={
+          location ? [location.lat, location.lng] : [27.7172, 85.324] // Kathmandu default
+        }
+        zoom={location ? 14 : 7}
+        scrollWheelZoom
+        className="h-full w-full"
+      >
+        <TileLayer
+          attribution="© OpenStreetMap contributors"
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        <LocationMarker
+          location={location}
+          setLocation={setInternalLocation}
+          coverImage={coverImage}
+        />
+      </MapContainer>
+    </div>
+  );
+};
 
 export default MapPicker;
