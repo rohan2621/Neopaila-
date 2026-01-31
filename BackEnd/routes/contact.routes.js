@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  archiveContact,
   createContact,
   getContacts,
   replyContact,
@@ -16,5 +17,6 @@ router.post("/", contactRateLimit, createContact);
 /* 🔐 ADMIN */
 router.get("/", requireAdmin, getContacts);
 router.post("/:id/reply", requireAdmin, replyContact);
+router.patch("/:id/archive", requireAdmin, archiveContact);
 
 export default router;

@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { Link } from "react-router";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Img } from "./Img";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -137,20 +138,32 @@ const NeoPailaTestimonial = () => {
           {/* LEFT */}
           <div ref={leftRef} className="max-w-xl">
             <span className="text-5xl text-red-600 font-serif">“</span>
+
             <p className="mt-6 text-lg md:text-xl leading-relaxed text-gray-800">
               When people come to visit tourist and heritage sites, they often
               cannot find those who can explain the stories behind these places
               in detail. NeoPaila bridges that gap by preserving authentic
               voices and narratives.
             </p>
-            <div className="mt-6">
-              <p className="font-semibold text-gray-900">Kuman Gurung</p>
-              <p className="text-sm text-gray-600">Former Cultural Officer</p>
+
+            {/* AUTHOR */}
+            <div className="mt-6 flex items-center gap-4">
+              <Img
+                src="admin.png"
+                alt="Kritika Pandey"
+                className="h-11 w-11 rounded-full object-cover "
+              />
+
+              <div>
+                <p className="font-semibold text-gray-900">Kritika Pandey</p>
+                <p className="text-sm text-gray-600">Founder of NeoPaila</p>
+              </div>
             </div>
+
             <Link
               ref={buttonRef}
               to="/collaborate"
-              className="inline-block mt-8 rounded-md bg-red-600 px-6 py-3 text-sm font-semibold text-white transition"
+              className="inline-block mt-8 rounded-md bg-red-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
             >
               Collaborate with us
             </Link>
@@ -166,10 +179,7 @@ const NeoPailaTestimonial = () => {
                 and accessibility barriers.
               </p>
               <div className="mt-6">
-                <p className="font-semibold text-gray-900">Suresh Tuladhar</p>
-                <p className="text-sm text-gray-600">
-                  Priest, Karyabinayak Temple
-                </p>
+                <p className="font-semibold text-gray-900">Kritika Pandey</p>
               </div>
             </div>
           </div>

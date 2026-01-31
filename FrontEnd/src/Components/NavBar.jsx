@@ -1,22 +1,52 @@
 import { Link, NavLink } from "react-router-dom";
-import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
+import {
+  SignedIn,
+  SignedOut,
+  UserButton,
+  useUser,
+  useAuth,
+} from "@clerk/clerk-react";
 import { Image } from "@imagekit/react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Shield } from "lucide-react";
 
 const navLinks = [
   { label: "Home", to: "/" },
-  { label: "About", to: "/about" },
-  { label: "Features", to: "/features" },
-  { label: "Blog", to: "/blogs" },
-  { label: "Pricing", to: "/pricing" },
+  { label: "Gallery", to: "/gallery" },
+  { label: "Maps", to: "/maps" },
+  { label: "Join Us", to: "/join-us" },
+  { label: "About Us", to: "/about" },
 ];
 
 const NavBar = ({ lightboxOpen }) => {
   const logoRef = useRef(null);
   const [open, setOpen] = useState(false);
+
+  const { user, isLoaded } = useUser();
+  const { getToken } = useAuth();
+
+  const isAdmin = user?.publicMetadata?.role === "admin";
+
+  /* -------------------------
+     ADMIN UNREAD COUNT
+  ------------------------- */
+  const { data: unreadCount = 0 } = useQuery({
+    queryKey: ["admin-unread-contacts"],
+    enabled: isLoaded && isAdmin,
+    refetchInterval: 15000,
+    queryFn: async () => {
+      const token = await getToken();
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/contact`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return res.data.filter((m) => !m.replied).length;
+    },
+  });
 
   /* -------------------------
      NAV ENTRANCE
@@ -33,7 +63,7 @@ const NavBar = ({ lightboxOpen }) => {
   }, [lightboxOpen]);
 
   /* -------------------------
-     LOGO HOVER (DESKTOP ONLY)
+     LOGO HOVER
   ------------------------- */
   const logoEnter = () => {
     if (window.innerWidth < 768) return;
@@ -57,7 +87,6 @@ const NavBar = ({ lightboxOpen }) => {
 
   /* -------------------------
      LIQUID NAV ITEM HOVER
-     (UNCHANGED)
   ------------------------- */
   const handleEnter = (e) => {
     if (lightboxOpen || window.innerWidth < 768) return;
@@ -73,17 +102,11 @@ const NavBar = ({ lightboxOpen }) => {
     const dx = e.clientX - (bounds.left + bounds.width / 2);
     const dy = e.clientY - (bounds.top + bounds.height / 2);
 
-    const distanceX = Math.abs(dx) / (bounds.width / 2);
-    const distanceY = Math.abs(dy) / (bounds.height / 2);
-
-    const scaleX = 1 + Math.min(distanceX * 0.25, 0.35);
-    const scaleY = 1 + Math.min(distanceY * 0.25, 0.35);
-
     gsap.to(inner, {
       x: dx * 0.25,
       y: dy * 0.25,
-      scaleX,
-      scaleY,
+      scaleX: 1.15,
+      scaleY: 1.15,
       duration: 0.25,
       ease: "power3.out",
       overwrite: true,
@@ -93,7 +116,6 @@ const NavBar = ({ lightboxOpen }) => {
   const handleLeave = (e) => {
     if (lightboxOpen || window.innerWidth < 768) return;
     const inner = e.currentTarget.querySelector(".nav-inner");
-
     gsap.to(inner, {
       x: 0,
       y: 0,
@@ -107,11 +129,12 @@ const NavBar = ({ lightboxOpen }) => {
 
   return (
     <div
-      className={`fixed top-3 left-1/2 z-50 w-full -translate-x-1/2 px-4
-      ${lightboxOpen ? "pointer-events-none" : ""}`}
+      className={`fixed top-3 left-1/2 z-50 w-full -translate-x-1/2 px-4 ${
+        lightboxOpen ? "pointer-events-none" : ""
+      }`}
     >
       <div className="nav-wrapper mx-auto max-w-7xl">
-        <nav className="pointer-events-auto flex items-center justify-between rounded-full border border-black/5 bg-white/80 px-6 py-3 shadow-md backdrop-blur">
+        <nav className="pointer-events-auto flex items-center justify-between rounded-full border border-black/5 bg-white/30 px-6 py-3 shadow-md backdrop-blur">
           {/* LOGO */}
           <Link
             to="/"
@@ -144,11 +167,24 @@ const NavBar = ({ lightboxOpen }) => {
                   <NavLink
                     to={link.to}
                     className={({ isActive }) =>
-                      `text-sm font-medium transition-colors ${
+                      `
+                      relative text-sm font-medium
+                      transition-colors
+                      ${
                         isActive
                           ? "text-gray-900"
                           : "text-gray-700 hover:text-gray-900"
-                      }`
+                      }
+
+                      after:absolute after:left-1/2 after:-bottom-1
+                      after:h-[2px] after:w-0
+                      after:-translate-x-1/2
+                      after:rounded-full after:bg-[#540000]
+                      after:transition-all after:duration-300
+
+                      hover:after:w-full
+                      ${isActive ? "after:w-full" : ""}
+                    `
                     }
                   >
                     {link.label}
@@ -156,6 +192,18 @@ const NavBar = ({ lightboxOpen }) => {
                 </div>
               </div>
             ))}
+
+            {/* ADMIN ICON */}
+            {isAdmin && (
+              <NavLink to="/admin" className="relative flex items-center">
+                <Shield className="h-5 w-5 text-[#540000]" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-2 -right-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#540000] px-1 text-xs font-bold text-white animate-pulse">
+                    {unreadCount}
+                  </span>
+                )}
+              </NavLink>
+            )}
           </div>
 
           {/* RIGHT */}
@@ -163,9 +211,14 @@ const NavBar = ({ lightboxOpen }) => {
             <SignedOut>
               <Link
                 to="/login"
-                className="hidden md:block rounded-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                className="
+                  hidden md:inline-flex items-center justify-center
+                  rounded-full px-5 py-2 text-sm font-medium
+                  bg-[#540000] text-white
+                  transition hover:bg-[#540000cf]
+                "
               >
-                Login
+                Sign Up
               </Link>
             </SignedOut>
 
@@ -192,11 +245,31 @@ const NavBar = ({ lightboxOpen }) => {
                   key={link.label}
                   to={link.to}
                   onClick={() => setOpen(false)}
-                  className="text-sm font-medium text-gray-800"
+                  className={({ isActive }) =>
+                    `text-sm font-medium ${
+                      isActive ? "text-[#540000]" : "text-gray-800"
+                    }`
+                  }
                 >
                   {link.label}
                 </NavLink>
               ))}
+
+              {isAdmin && (
+                <NavLink
+                  to="/admin"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 text-sm font-semibold text-[#540000]"
+                >
+                  <Shield size={16} />
+                  Admin Inbox
+                  {unreadCount > 0 && (
+                    <span className="rounded-full bg-[#540000] px-2 text-xs text-white">
+                      {unreadCount}
+                    </span>
+                  )}
+                </NavLink>
+              )}
             </div>
           </div>
         )}

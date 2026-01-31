@@ -1,218 +1,144 @@
-import React, { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import MainCate from "../Components/MainCate";
 import FeaturedPost from "../Components/FeaturedPost";
 import NeoPailaTestimonial from "../Components/NeoPailaTestimonial";
 import NeoPailaFooter from "../Components/NeoPailaFooter";
+import ContactUsPage from "./ContactUsPage";
+import { FaPencilAlt } from "react-icons/fa";
 
-gsap.registerPlugin(ScrollTrigger);
+import { BsArrowUpLeftCircleFill } from "react-icons/bs";
+/* -------------------------------
+   Simple animations (NO SCROLL)
+-------------------------------- */
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
 
 const HomePage = () => {
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // ---------------- Heading Animation ----------------
-      const headingTimeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: ".heading",
-          start: "top 90%",
-          toggleActions: "play reverse play reverse",
-        },
-      });
-
-      headingTimeline
-        // Animate heading container
-        .from(".heading", {
-          autoAlpha: 0,
-          y: 40,
-          duration: 1,
-          ease: "power3.out",
-        })
-        // Animate "Stories"
-        .from(
-          ".red-word",
-          {
-            scale: 0.8,
-            autoAlpha: 0,
-            y: -10,
-            duration: 0.8,
-            ease: "back.out(1.7)",
-          },
-          "-=0.5"
-        )
-        // Animate "World"
-        .from(
-          ".blue-word",
-          {
-            scale: 0.8,
-            autoAlpha: 0,
-            y: -10,
-            duration: 0.8,
-            ease: "back.out(1.7)",
-          },
-          "-=0.6"
-        );
-
-      // ---------------- Infinite Animations ----------------
-      gsap.to(".circular-text", {
-        rotation: 360,
-        duration: 12,
-        repeat: -1,
-        ease: "none",
-        transformOrigin: "50% 50%",
-      });
-
-      gsap.to(".arrow", {
-        y: -6,
-        duration: 0.8,
-        repeat: -1,
-        yoyo: true,
-        ease: "power1.inOut",
-      });
-
-      // ---------------- Section Animations ----------------
-      const sections = gsap.utils.toArray(".scroll-section");
-
-      sections.forEach((section) => {
-        const children = section.querySelectorAll(".animate-child");
-
-        // Fade in section
-        gsap.fromTo(
-          section,
-          { autoAlpha: 0, y: 40 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: section,
-              start: "top bottom",
-              end: "bottom top",
-              toggleActions: "play reverse play reverse",
-              invalidateOnRefresh: true,
-            },
-          }
-        );
-
-        // Fade in children one by one
-        if (children.length) {
-          gsap.fromTo(
-            children,
-            { autoAlpha: 0, y: 40 },
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.8,
-              stagger: 0.2,
-              ease: "power3.out",
-              scrollTrigger: {
-                trigger: section,
-                start: "top bottom",
-                toggleActions: "play reverse play reverse",
-              },
-            }
-          );
-        }
-      });
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <div ref={containerRef} className="flex flex-col gap-8 md:gap-12">
-      <div className="px-4 md:px-8 lg:px-16 xl:px-24 2xl:px-32">
-        {/* Breadcrumbs */}
-        <div className="flex gap-2 text-sm px-4 md:px-12 pt-6 scroll-section animate-child">
-          <Link to="/" className="hover:text-blue-600 transition-colors">
-            Home
-          </Link>
-          <span className="text-[10px] flex items-center">●</span>
-          <span className="text-blue-900">Blogs and Articles</span>
-        </div>
-
-        {/* Header */}
-        <div className="flex flex-col lg:flex-row items-start xl:items-center justify-between gap-10 px-4 md:px-12 py-10 scroll-section">
-          <h1
+    <div className="flex flex-col gap-16">
+      {/* HERO */}
+      <motion.section
+        initial="hidden"
+        animate="show"
+        className="px-6 md:px-12 lg:px-20 pt-24"
+      >
+        <div className="flex flex-col lg:flex-row items-start justify-between gap-12">
+          {/* TEXT */}
+          <motion.h1
+            variants={fadeUp}
             style={{ fontFamily: "'Times New Roman', Times, serif" }}
-            className="heading text-3xl sm:text-4xl md:text-5xl text-center lg:text-left leading-tight max-w-[700px]"
+            className="text-4xl md:text-5xl lg:text-6xl leading-tight max-w-[720px]"
           >
-            Create{" "}
-            <span className="red-word text-red-600 inline-block">Stories</span>
-            <span className="block relative ml-24 mt-6">
+            Create <span className="text-red-600 inline-block">Stories</span>
+            <span className="block ml-20 mt-6">
               from Around the{" "}
-              <span className="blue-word text-blue-700 inline-block">
-                World
-              </span>
+              <span className="text-blue-700 inline-block">World</span>
             </span>
-          </h1>
+          </motion.h1>
 
-          <Link
-            to="/write"
-            className="relative flex justify-center items-center mx-auto lg:mx-0 w-[240px] h-[240px]"
+          {/* WRITE ROUND – RIGHT SIDE */}
+          <motion.div
+            variants={fadeUp}
+            className="w-[220px] h-[220px] mx-auto lg:mx-0"
+            whileHover={{ scale: 1.06 }}
+            transition={{ type: "spring", stiffness: 140 }}
           >
-            <svg
-              className="absolute w-full h-full drop-shadow-md"
-              viewBox="0 0 100 100"
+            <Link
+              to="/write"
+              className="relative flex items-center justify-center w-full h-full"
             >
-              <defs>
-                <path
-                  id="circlePath"
-                  d="M50,50 m-35,0 a35,35 0 1,1 70,0 a35,35 0 1,1 -70,0"
-                />
-              </defs>
-              <text
-                className="circular-text"
-                fontSize="7"
-                fill="#111"
-                fontWeight="bold"
+              {/* ROTATING TEXT */}
+              <motion.svg
+                className="absolute w-full h-full"
+                viewBox="0 0 100 100"
+                animate={{ rotate: 360 }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 16,
+                  ease: "linear",
+                }}
               >
-                <textPath xlinkHref="#circlePath">
-                  Discover Your Own stories with Others &nbsp; NeoPaila
-                </textPath>
-              </text>
-            </svg>
+                <defs>
+                  <path
+                    id="circlePath"
+                    d="M50,50 m-35,0 a35,35 0 1,1 70,0 a35,35 0 1,1 -70,0"
+                  />
+                </defs>
 
-            <svg
-              className="arrow absolute rotate-[221deg] w-10 h-10 text-red-600"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <line x1="12" y1="2" x2="12" y2="18" />
-              <polyline points="5 11 12 18 19 11" />
-            </svg>
-          </Link>
+                <text fontSize="7" fontWeight="bold">
+                  <textPath
+                    className="gap-9 text-[9px]"
+                    xlinkHref="#circlePath"
+                  >
+                    Write Y<tspan fill="#02b5d1">o</tspan>ur{" "}
+                    <tspan fill="#ff0000">Own</tspan> Story{" "}
+                    <tspan fill="#006b70">•</tspan>
+                    NeoPaila <tspan fill="#040070">•</tspan>
+                  </textPath>
+                </text>
+              </motion.svg>
+
+              {/* ARROW */}
+              <motion.div
+                animate={{ rotate: -360 }}
+                whileHover={{ scale: 1.08 }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 25,
+                  ease: "easeIn",
+                }}
+                className="
+    flex items-baseline justify-center
+    h-10 w-10
+    rounded-full
+    bg-[#01329b]
+    text-white
+    text-4xl
+    shadow-lg
+    cursor-pointer
+  "
+              >
+                <FaPencilAlt />
+              </motion.div>
+            </Link>
+          </motion.div>
         </div>
+      </motion.section>
 
-        {/* Content */}
-        <div className="px-4 md:px-12 lg:px-20 flex flex-col gap-8">
-          <div className="scroll-section animate-child">
-            <MainCate />
-          </div>
+      {/* MAIN CONTENT */}
+      <motion.section
+        initial="hidden"
+        animate="show"
+        variants={fadeUp}
+        className="px-6 md:px-12 lg:px-20 space-y-16"
+      >
+        <MainCate />
+        <FeaturedPost />
+      </motion.section>
 
-          <div className="scroll-section animate-child">
-            <FeaturedPost />
-          </div>
-        </div>
-      </div>
-
-      {/* Testimonial */}
-      <div className="scroll-section animate-child">
+      {/* TESTIMONIAL */}
+      <motion.section initial="hidden" animate="show" variants={fadeUp}>
         <NeoPailaTestimonial />
+      </motion.section>
+
+      {/* CONTACT */}
+      <div className="-mt-24">
+        <ContactUsPage />
       </div>
 
-      {/* Footer */}
-      <div className="scroll-section animate-child">
-        <NeoPailaFooter />
-      </div>
+      {/* FOOTER */}
+      <NeoPailaFooter />
     </div>
   );
 };

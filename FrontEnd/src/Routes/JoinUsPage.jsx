@@ -9,23 +9,23 @@ import { motion } from "framer-motion";
 import { Link } from "react-router";
 
 /* ---------------------------
-   Animations
+   Animations (softer, human)
 ---------------------------- */
 const container = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.15 },
+    transition: { staggerChildren: 0.12 },
   },
 };
 
 const item = {
-  hidden: { opacity: 0, y: 40 },
-  show: { opacity: 1, y: 0 },
-};
-
-const hoverIcon = {
-  hover: { scale: 1.15, rotate: 6 },
+  hidden: { opacity: 0, y: 24 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
 };
 
 /* ---------------------------
@@ -33,117 +33,100 @@ const hoverIcon = {
 ---------------------------- */
 const JoinUsPage = () => {
   return (
-    <motion.div
+    <motion.section
       variants={container}
       initial="hidden"
       animate="show"
-      className="
-        relative
-        min-h-[calc(100vh-80px)]
-        overflow-hidden
-        px-4 py-24 md:px-8
-      "
+      className="relative min-h-screen px-5 py-28 md:px-10"
     >
-      {/* BACKGROUND GLOW */}
-      <div className="pointer-events-none absolute -top-32 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-[#540000]/20 blur-[140px]" />
+      {/* subtle background */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b  via-transparent to-transparent" />
 
       {/* HERO */}
-      <motion.div variants={item} className="mx-auto max-w-4xl text-center">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900">
-          Be Part of Our Journey 🌍
+      <motion.div variants={item} className="mx-auto max-w-3xl text-center">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+          This is more than a platform.
+          <br className="hidden sm:block" />
+          It’s a shared journey.
         </h1>
-        <p className="mt-5 text-lg text-gray-600">
-          We’re building a community of explorers, writers, and creators who
-          love meaningful places and stories.
+
+        <p className="mt-6 text-lg text-gray-600">
+          We’re slowly building a community of people who care about places,
+          stories, and the meaning behind them — not just likes and views.
         </p>
       </motion.div>
 
-      {/* STATS */}
+      {/* STATS (offset = human) */}
       <motion.div
         variants={container}
         className="mx-auto mt-20 grid max-w-4xl grid-cols-2 gap-6 md:grid-cols-4"
       >
-        <Stat value="1K+" label="Locations Shared" />
-        <Stat value="500+" label="Stories Written" />
-        <Stat value="30+" label="Countries" />
-        <Stat value="Growing" label="Community" />
+        <Stat value="1K+" label="Places shared by real people" />
+        <Stat value="500+" label="Stories worth reading" />
+        <Stat value="30+" label="Countries represented" />
+        <Stat value="Still growing" label="And just getting started" />
       </motion.div>
 
       {/* FEATURES */}
       <motion.div
         variants={container}
-        className="mx-auto mt-24 grid max-w-5xl gap-8 sm:grid-cols-2 md:grid-cols-3"
+        className="mx-auto mt-28 grid max-w-5xl gap-10 sm:grid-cols-2 md:grid-cols-3"
       >
         <FeatureCard
-          icon={<FiMapPin size={26} />}
-          title="Share Locations"
-          desc="Add meaningful places on the map and guide others."
+          icon={<FiMapPin />}
+          title="Add meaningful places"
+          desc="Not tourist checklists — places that actually meant something to you."
         />
+
         <FeatureCard
-          icon={<FiEdit3 size={26} />}
-          title="Write Stories"
-          desc="Turn experiences into stories people remember."
+          icon={<FiEdit3 />}
+          title="Tell your story"
+          desc="Short, long, messy or poetic. If it’s real, it belongs here."
         />
+
         <FeatureCard
-          icon={<FiUsers size={26} />}
-          title="Grow Together"
-          desc="Connect with a community that values exploration."
+          icon={<FiUsers />}
+          title="Find your people"
+          desc="Readers, writers, explorers — people who value depth over noise."
         />
       </motion.div>
 
-      {/* JOIN THE TEAM */}
-      <motion.div variants={item} className="mx-auto mt-28 max-w-5xl">
-        <div
-          className="
-            grid gap-10 rounded-3xl
-            bg-white p-10 shadow-xl
-            md:grid-cols-2
-          "
-        >
+      {/* JOIN TEAM */}
+      <motion.div variants={item} className="mx-auto mt-32 max-w-5xl">
+        <div className="grid gap-12 rounded-3xl bg-white p-10 shadow-xl md:grid-cols-2">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">
-              Join the Team 🚀
+            <h2 className="text-3xl font-semibold text-gray-900">
+              Want to build this with us?
             </h2>
+
             <p className="mt-4 text-gray-600">
-              We’re always looking for passionate people — designers,
-              developers, writers, and explorers.
+              We’re not a big company. Just a small, motivated team trying to
+              build something meaningful — carefully and honestly.
             </p>
 
             <ul className="mt-6 space-y-3 text-sm text-gray-600">
-              <li>✨ Flexible & remote-friendly</li>
-              <li>🌍 Impactful global project</li>
-              <li>🚀 Grow with a fast-moving team</li>
+              <li>• Remote & flexible by default</li>
+              <li>• Creative freedom, real ownership</li>
+              <li>• A project you can be proud of</li>
             </ul>
           </div>
 
           <div className="flex items-center justify-center">
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="
-                flex flex-col items-center gap-4
-                rounded-2xl border
-                border-[#540000]/30
-                p-8 text-center
-              "
+              whileHover={{ y: -4 }}
+              className="rounded-2xl border border-[#540000]/25 p-8 text-center"
             >
-              <FiBriefcase size={42} className="text-[#540000]" />
-              <p className="text-gray-700 font-medium">
-                Interested in working with us?
+              <FiBriefcase size={38} className="mx-auto text-[#540000]" />
+
+              <p className="mt-4 font-medium text-gray-700">
+                Interested in collaborating?
               </p>
+
               <Link
-                to={"/contact-us"}
-                className="
-                  rounded-full
-                  border border-[#540000]
-                  px-6 py-2
-                  text-sm font-semibold
-                  text-[#540000]
-                  transition
-                  hover:bg-[#540000]
-                  hover:text-white
-                "
+                to="/contact-us"
+                className="mt-4 inline-block rounded-full border border-[#540000] px-6 py-2 text-sm font-semibold text-[#540000] transition hover:bg-[#540000] hover:text-white"
               >
-                Contact the Team
+                Reach out
               </Link>
             </motion.div>
           </div>
@@ -151,45 +134,34 @@ const JoinUsPage = () => {
       </motion.div>
 
       {/* CTA */}
-      <motion.div variants={item} className="mx-auto mt-28 max-w-3xl">
+      <motion.div variants={item} className="mx-auto mt-32 max-w-3xl">
         <div className="rounded-3xl bg-white p-10 text-center shadow-xl">
-          <h2 className="text-3xl font-bold text-gray-900">
-            Ready to start your journey?
+          <h2 className="text-3xl font-semibold text-gray-900">
+            Ready to take the first step?
           </h2>
+
           <p className="mt-3 text-gray-600">
-            Join now and help shape the future of exploration.
+            Create an account, explore stories, or simply read quietly.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
             <Link
               to="/register"
-              className="
-                rounded-full bg-[#540000]
-                px-8 py-3 text-white
-                font-semibold shadow-lg
-                transition hover:scale-105
-              "
+              className="rounded-full bg-[#540000] px-8 py-3 font-semibold text-white transition hover:scale-105"
             >
-              Create Account
+              Get started
             </Link>
 
             <Link
               to="/login"
-              className="
-                rounded-full border border-[#540000]
-                px-8 py-3 font-semibold
-                text-[#540000]
-                transition
-                hover:scale-105
-                
-              "
+              className="rounded-full border border-[#540000] px-8 py-3 font-semibold text-[#540000] transition hover:bg-[#540000]/5"
             >
-              Sign In
+              I already have an account
             </Link>
           </div>
         </div>
       </motion.div>
-    </motion.div>
+    </motion.section>
   );
 };
 
@@ -202,26 +174,11 @@ export default JoinUsPage;
 const FeatureCard = ({ icon, title, desc }) => (
   <motion.div
     variants={item}
-    whileHover="hover"
-    className="
-      group rounded-2xl bg-white
-      p-6 shadow-md transition
-      hover:-translate-y-1 hover:shadow-xl
-    "
+    className="rounded-2xl bg-white p-6 shadow-md transition hover:-translate-y-1 hover:shadow-lg"
   >
-    <motion.div
-      variants={hoverIcon}
-      className="
-        mb-4 inline-flex h-12 w-12
-        items-center justify-center
-        rounded-full bg-[#540000]/10
-        text-[#540000]
-        group-hover:bg-[#540000]
-        group-hover:text-white
-      "
-    >
+    <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#540000]/10 text-[#540000]">
       {icon}
-    </motion.div>
+    </div>
 
     <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
     <p className="mt-2 text-sm text-gray-600">{desc}</p>
@@ -231,16 +188,12 @@ const FeatureCard = ({ icon, title, desc }) => (
 const Stat = ({ value, label }) => (
   <motion.div
     variants={item}
-    className="
-      flex flex-col items-center
-      rounded-2xl bg-white p-5
-      shadow-md
-    "
+    className="rounded-2xl bg-white p-5 text-center shadow-md"
   >
-    <div className="flex items-center gap-2 text-2xl font-bold text-[#540000]">
+    <div className="flex justify-center items-center gap-2 text-2xl font-bold text-[#540000]">
       <FiTrendingUp />
       {value}
     </div>
-    <span className="mt-1 text-xs text-gray-600">{label}</span>
+    <p className="mt-1 text-xs text-gray-600">{label}</p>
   </motion.div>
 );

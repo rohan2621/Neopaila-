@@ -67,3 +67,83 @@ body{
 .animate-fadeIn {
   animation: fadeIn 0.25s ease-out;
 }
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #540000 transparent;
+}
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 6px;
+  /* thinner = classy */
+  height: 6px;
+}
+
+/* REMOVE ARROWS (IMPORTANT) */
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 6px 0;
+  /* breathing room */
+}
+
+/* Thumb */
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg,
+      #540000,
+      #7a0a0a);
+  border-radius: 999px;
+  transition: background 0.25s ease, opacity 0.25s ease;
+}
+
+/* Hover effect */
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg,
+      #7a0a0a,
+      #540000);
+}
+
+/* Active (while dragging) */
+::-webkit-scrollbar-thumb:active {
+  background: #3a0000;
+}
+
+/* =========================================
+   OPTIONAL: SCROLLBAR ONLY APPEARS ON SCROLL
+   (comment out if you want always visible)
+========================================= */
+
+body::-webkit-scrollbar-thumb {
+  opacity: 0.6;
+}
+
+body:hover::-webkit-scrollbar-thumb {
+  opacity: 1;
+}
+
+/* =========================================
+   MOBILE SAFETY
+========================================= */
+
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
+}
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}

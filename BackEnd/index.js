@@ -11,6 +11,7 @@ import postRouter from "./routes/post.route.js";
 import mapRouter from "./routes/map.route.js";
 import imageRouter from "./routes/image.route.js";
 import contactRoutes from "./routes/contact.routes.js";
+import adminRoutes from "./routes/admin.route.js";
 
 // Webhook
 import { clerkWebHook } from "./controllers/webhook.controller.js";
@@ -69,6 +70,7 @@ app.use("/images", imageRouter);
 
 /* ✅ CONTACT US (PUBLIC) */
 app.use("/api/contact", contactRoutes);
+app.use("/api/admin", adminRoutes);
 
 /* --------------------------------
    GLOBAL ERROR HANDLER

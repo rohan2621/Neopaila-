@@ -79,3 +79,15 @@ export const replyContact = async (req, res, next) => {
     next(err);
   }
 };
+export const archiveContact = async (req, res) => {
+  const contact = await Contact.findById(req.params.id);
+
+  if (!contact) {
+    return res.status(404).json({ message: "Not found" });
+  }
+
+  contact.archived = true;
+  await contact.save();
+
+  res.json({ success: true });
+};

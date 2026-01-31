@@ -80,26 +80,21 @@ const NeoPailaFooter = () => {
               Explore
             </h3>
             <ul className="space-y-3 text-sm">
-              {["/about", "/stories", "/places", "/collaborate"].map(
-                (path, i) => (
-                  <li key={i}>
-                    <Link
-                      ref={addLinkRef}
-                      to={path}
-                      className="hover:text-[#b91c1c] transition"
-                    >
-                      {
-                        [
-                          "About Us",
-                          "Stories",
-                          "Heritage Places",
-                          "Collaborate",
-                        ][i]
-                      }
-                    </Link>
-                  </li>
-                )
-              )}
+              {["/about", "/posts", "/maps", "/join-us"].map((path, i) => (
+                <li key={i}>
+                  <Link
+                    ref={addLinkRef}
+                    to={path}
+                    className="hover:text-[#b91c1c] transition"
+                  >
+                    {
+                      ["About Us", "Stories", "Heritage Places", "Collaborate"][
+                        i
+                      ]
+                    }
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -109,7 +104,7 @@ const NeoPailaFooter = () => {
               Support
             </h3>
             <ul className="space-y-3 text-sm">
-              {["/contact", "/faq", "/privacy", "/terms"].map((path, i) => (
+              {["/contact-us", "/faq", "/privacy", "/terms"].map((path, i) => (
                 <li key={i}>
                   <Link
                     ref={addLinkRef}
@@ -140,10 +135,10 @@ const NeoPailaFooter = () => {
               Email:{" "}
               <a
                 ref={addLinkRef}
-                href="mailto:info@neopaila.com"
+                href="mailto:neopailaa@gmail.com"
                 className="hover:text-[#b91c1c] transition"
               >
-                info@neopaila.com
+                neopailaa@gmail.com
               </a>
             </p>
             <div className="mt-4 flex gap-4">
@@ -151,7 +146,7 @@ const NeoPailaFooter = () => {
                 <a
                   key={i}
                   ref={addLinkRef}
-                  href="#"
+                  href="https://www.instagram.com/neo_paila"
                   className="text-sm hover:text-[#b91c1c] transition"
                 >
                   {item}
