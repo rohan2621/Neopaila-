@@ -23,7 +23,7 @@ export const MainLayout = () => {
           onClick={() => navigate(-1)}
           className="
             fixed z-[999]
-            flex items-center gap-2
+            flex  md:hidden  items-center gap-2
             rounded-full
             border text-white
             bg-[#540000]
