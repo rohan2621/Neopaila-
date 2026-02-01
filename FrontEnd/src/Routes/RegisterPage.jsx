@@ -17,8 +17,9 @@ export const RegisterPage = () => {
     <div className="flex register items-center justify-center h-[calc(100vh-80px)]  hide-scrollbar">
       <div className="min-h-[600px] w-full flex justify-center items-center">
         <SignUp
-          redirectUrl="/continue"
-          afterSignUpUrl="/continue"
+          path="/register"
+          routing="path"
+          afterSignUpUrl="https://neopaila.onrender.com/#/continue"
           className="w-20"
           appearance={{
             elements: {
