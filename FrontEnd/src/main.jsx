@@ -1,6 +1,7 @@
+// main.jsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 
 import "./index.css";
 import "leaflet/dist/leaflet.css";
@@ -31,67 +32,61 @@ import WriteMap from "./Components/WriteMap.jsx";
 import ContactUsPage from "./Routes/ContactUsPage.jsx";
 import AdminContactPage from "./Routes/AdminContactPage.jsx";
 
-import SmoothScroll from "./Components/providers/SmoothScroll.jsx"; // ⭐ NEW
+import SmoothScroll from "./Components/providers/SmoothScroll.jsx";
 import "./leafletIconFix";
 import AboutPage from "./Routes/AboutPage.jsx";
 import PageNotFound from "./Routes/PageNotFound.jsx";
-const queryClient = new QueryClient();
 
+const queryClient = new QueryClient();
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
 if (!PUBLISHABLE_KEY) {
-  throw new Error("Missing Publishable Key");
+  throw new Error("Missing Clerk Publishable Key");
 }
 
-/* ---------------------------
-   ROUTER
----------------------------- */
-const router = createBrowserRouter([
-  {
-    element: <MainLayout />,
-    children: [
-      { path: "/", element: <HomePage /> },
-      { path: "/posts", element: <PostListPage /> },
-      { path: "/write", element: <Write /> },
-      { path: "/login", element: <LoginPage /> },
-      { path: "/register", element: <RegisterPage /> },
-      { path: "/gallery", element: <Gallery /> },
-
-      // 🗺️ MAP ROUTES
-      { path: "/maps", element: <MapsPage /> },
-      { path: "/maps/write", element: <WriteMap /> },
-      { path: "/maps/:slug", element: <LocationPage /> },
-
-      { path: "/join-us", element: <JoinUsPage /> },
-      { path: "/contact-us", element: <ContactUsPage /> },
-      { path: "/about", element: <AboutPage /> },
-
-      // 🔐 ADMIN
-      {
-        path: "/admin",
-        element: (
-          <RequireAdmin>
-            <AdminContactPage />
-          </RequireAdmin>
-        ),
-      },
-
-      // ⚠️ Keep dynamic post route
-      { path: "/:slug", element: <SinglePostPage /> },
-
-      // ⚠️ 404 Page — MUST BE LAST
-      { path: "*", element: <PageNotFound /> },
-    ],
-  },
-]);
-/* ---------------------------
-   APP BOOTSTRAP
----------------------------- */
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
       <QueryClientProvider client={queryClient}>
         <SmoothScroll>
-          <RouterProvider router={router} />
+          <HashRouter>
+            <Routes>
+              {/* Main Layout wrapper */}
+              <Route element={<MainLayout />}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/posts" element={<PostListPage />} />
+                <Route path="/write" element={<Write />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/gallery" element={<Gallery />} />
+
+                {/* MAP ROUTES */}
+                <Route path="/maps" element={<MapsPage />} />
+                <Route path="/maps/write" element={<WriteMap />} />
+                <Route path="/maps/:slug" element={<LocationPage />} />
+
+                <Route path="/join-us" element={<JoinUsPage />} />
+                <Route path="/contact-us" element={<ContactUsPage />} />
+                <Route path="/about" element={<AboutPage />} />
+
+                {/* ADMIN ROUTE */}
+                <Route
+                  path="/admin"
+                  element={
+                    <RequireAdmin>
+                      <AdminContactPage />
+                    </RequireAdmin>
+                  }
+                />
+
+                {/* Dynamic post route */}
+                <Route path="/:slug" element={<SinglePostPage />} />
+
+                {/* 404 Page — MUST BE LAST */}
+                <Route path="*" element={<PageNotFound />} />
+              </Route>
+            </Routes>
+          </HashRouter>
           <ToastContainer position="bottom-right" />
         </SmoothScroll>
       </QueryClientProvider>
