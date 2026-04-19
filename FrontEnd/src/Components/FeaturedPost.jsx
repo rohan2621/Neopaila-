@@ -9,66 +9,43 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ----------------------------------
-   API
------------------------------------ */
+/* ---------------- API ---------------- */
 const fetchFeaturedPosts = async () => {
   const res = await axios.get(`${import.meta.env.VITE_API_URL}/posts`, {
     params: { featured: true, limit: 5, sort: "newest" },
   });
+
   return res.data;
 };
 
-/* ----------------------------------
-   SKELETON COMPONENT
------------------------------------ */
+/* ---------------- SKELETON ---------------- */
 const Skeleton = ({ className }) => (
   <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
 );
 
-const FeaturedPostSkeleton = () => {
-  return (
-    <section className="flex flex-col lg:flex-row gap-8 mt-8">
-      {/* MAIN POST */}
-      <div className="w-full lg:w-1/2 flex flex-col gap-4">
-        <Skeleton className="w-full aspect-video rounded-3xl" />
+const FeaturedPostSkeleton = () => (
+  <section className="flex flex-col lg:flex-row gap-8 mt-8">
+    <div className="w-full lg:w-1/2 flex flex-col gap-4">
+      <Skeleton className="w-full aspect-video rounded-3xl" />
+      <Skeleton className="w-3/4 h-8" />
+      <Skeleton className="w-2/3 h-8" />
+    </div>
 
-        <div className="flex gap-4">
-          <Skeleton className="w-10 h-4" />
-          <Skeleton className="w-24 h-4" />
-          <Skeleton className="w-20 h-4" />
-        </div>
-
-        <Skeleton className="w-3/4 h-8" />
-        <Skeleton className="w-2/3 h-8" />
-      </div>
-
-      {/* SIDE POSTS */}
-      <div className="w-full lg:w-1/2 flex flex-col gap-6">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="flex gap-4">
-            <Skeleton className="w-1/3 aspect-video rounded-xl" />
-
-            <div className="flex-1 flex flex-col gap-2">
-              <div className="flex gap-3">
-                <Skeleton className="w-8 h-4" />
-                <Skeleton className="w-20 h-4" />
-                <Skeleton className="w-16 h-4" />
-              </div>
-
-              <Skeleton className="w-full h-5" />
-              <Skeleton className="w-4/5 h-5" />
-            </div>
+    <div className="w-full lg:w-1/2 flex flex-col gap-6">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="flex gap-4">
+          <Skeleton className="w-1/3 aspect-video rounded-xl" />
+          <div className="flex-1 flex flex-col gap-2">
+            <Skeleton className="w-full h-5" />
+            <Skeleton className="w-4/5 h-5" />
           </div>
-        ))}
-      </div>
-    </section>
-  );
-};
+        </div>
+      ))}
+    </div>
+  </section>
+);
 
-/* ----------------------------------
-   MAIN COMPONENT
------------------------------------ */
+/* ---------------- MAIN ---------------- */
 const FeaturedPost = () => {
   const containerRef = useRef(null);
 
@@ -77,9 +54,7 @@ const FeaturedPost = () => {
     queryFn: fetchFeaturedPosts,
   });
 
-  /* ----------------------------------
-     GSAP SCROLL ANIMATION
-  ----------------------------------- */
+  /* ---------------- GSAP ---------------- */
   useEffect(() => {
     if (!data || !containerRef.current) return;
 
@@ -98,7 +73,6 @@ const FeaturedPost = () => {
           scrollTrigger: {
             trigger: post,
             start: "top bottom",
-            toggleActions: "play reverse play reverse",
           },
         });
       });
@@ -107,13 +81,10 @@ const FeaturedPost = () => {
     return () => ctx.revert();
   }, [data]);
 
-  /* ----------------------------------
-     HOVER EFFECT
-  ----------------------------------- */
+  /* ---------------- HOVER ---------------- */
   const handleHover = (e) => {
     gsap.to(e.currentTarget, {
       scale: 1.03,
-      boxShadow: "0 12px 24px rgba(0,0,0,0.15)",
       duration: 0.3,
     });
   };
@@ -121,14 +92,11 @@ const FeaturedPost = () => {
   const handleLeave = (e) => {
     gsap.to(e.currentTarget, {
       scale: 1,
-      boxShadow: "0 0 0 rgba(0,0,0,0)",
       duration: 0.3,
     });
   };
 
-  /* ----------------------------------
-     STATES
-  ----------------------------------- */
+  /* ---------------- STATES ---------------- */
   if (isLoading) return <FeaturedPostSkeleton />;
   if (isError) return <p>Failed to load posts</p>;
 
@@ -137,10 +105,8 @@ const FeaturedPost = () => {
 
   const mainPost = posts[0];
   const sidePosts = posts.slice(1);
-
-  /* ----------------------------------
-     UI
-  ----------------------------------- */
+  console.log(data);
+  /* ---------------- UI ---------------- */
   return (
     <section
       ref={containerRef}
@@ -149,13 +115,15 @@ const FeaturedPost = () => {
       {/* MAIN POST */}
       <Link
         to={`/${mainPost.slug}`}
-        className="w-full lg:w-1/2 flex flex-col gap-4 animate-post rounded-xl"
+        className="w-full lg:w-1/2 flex flex-col gap-4 animate-post"
         onMouseEnter={handleHover}
         onMouseLeave={handleLeave}
       >
-        {mainPost.img && (
+        {/* FIXED IMAGE HANDLING */}
+        {mainPost.image && (
           <Img
-            src={mainPost.img}
+            src={mainPost.image}
+            alt={mainPost.title}
             className="rounded-3xl aspect-video object-cover"
           />
         )}
@@ -175,13 +143,15 @@ const FeaturedPost = () => {
           <Link
             key={post._id}
             to={`/${post.slug}`}
-            className="flex gap-4 animate-post rounded-xl"
+            className="flex gap-4 animate-post"
             onMouseEnter={handleHover}
             onMouseLeave={handleLeave}
           >
-            {post.img && (
+            {/* FIXED IMAGE HANDLING */}
+            {post.image && (
               <Img
-                src={post.img}
+                src={post.image}
+                alt={post.title}
                 className="w-1/3 aspect-video rounded-xl object-cover"
               />
             )}

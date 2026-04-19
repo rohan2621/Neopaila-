@@ -6,23 +6,18 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-/* -------------------------
-   IMAGEKIT CONFIG
-------------------------- */
+// -------------------------
+// IMAGEKIT CONFIG
+// -------------------------
 const imagekit = new ImageKit({
   urlEndpoint: process.env.IK_URL_ENDPOINT,
   publicKey: process.env.IK_PUBLIC_KEY,
   privateKey: process.env.IK_PRIVATE_KEY,
 });
 
-/* -------------------------
-   SIMPLE CACHE (IMPORTANT)
-------------------------- */
-let postsCache = new Map();
-
-/* -------------------------
-   CREATE POST
-------------------------- */
+// -------------------------
+// CREATE POST
+// -------------------------
 export const createPost = async (req, res) => {
   try {
     const userId = await getUserIdFromToken(req);
@@ -37,6 +32,7 @@ export const createPost = async (req, res) => {
       return res.status(400).json({ error: "Missing fields" });
     }
 
+    // Generate unique slug
     let baseSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     let slug = baseSlug;
     let count = 2;
@@ -52,10 +48,6 @@ export const createPost = async (req, res) => {
     });
 
     const saved = await post.save();
-
-    // clear cache (important after create)
-    postsCache.clear();
-
     res.status(201).json(saved);
   } catch (err) {
     console.error("Create Post Error:", err);
@@ -63,19 +55,163 @@ export const createPost = async (req, res) => {
   }
 };
 
-/* -------------------------
-   GET POSTS (OPTIMIZED)
-------------------------- */
-export const getPosts = async (req, res) => {
+// -------------------------
+// DELETE POST
+// -------------------------
+export const deletePost = async (req, res) => {
   try {
-    const cacheKey = JSON.stringify(req.query);
+    const userId = await getUserIdFromToken(req);
+    if (!userId) return res.status(401).json({ error: "Not authorized" });
 
-    // return cached response if valid (60s)
-    const cached = postsCache.get(cacheKey);
-    if (cached && Date.now() - cached.time < 60000) {
-      return res.json(cached.data);
+    const role = req.auth?.sessionClaims?.metadata?.role;
+
+    if (role === "admin") {
+      await Post.findByIdAndDelete(req.params.id);
+      return res.status(200).json({ message: "Post deleted" });
     }
 
+    const user = await User.findOne({ clerkUserId: userId });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const deletedPost = await Post.findOneAndDelete({
+      _id: req.params.id,
+      user: user._id,
+    });
+
+    if (!deletedPost) {
+      return res.status(404).json({
+        error: "Post not found or unauthorized",
+      });
+    }
+
+    res.status(200).json({ message: "Post deleted" });
+  } catch (err) {
+    console.error("Delete Post Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// -------------------------
+// FEATURE / UNFEATURE POST (ADMIN)
+// -------------------------
+export const featurePost = async (req, res) => {
+  try {
+    const userId = await getUserIdFromToken(req);
+    if (!userId) return res.status(401).json({ error: "Not authorized" });
+
+    const role = req.auth?.sessionClaims?.metadata?.role;
+
+    if (role !== "admin") {
+      return res.status(403).json({
+        message: "You cannot feature posts",
+      });
+    }
+
+    const { postId } = req.body;
+
+    if (!postId) {
+      return res.status(400).json({ error: "Post ID required" });
+    }
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ error: "Post not found" });
+
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      { isFeatured: !post.isFeatured },
+      { new: true }
+    );
+
+    res.status(200).json(updatedPost);
+  } catch (err) {
+    console.error("Feature Post Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// -------------------------
+// DELETE SINGLE IMAGE
+// -------------------------
+export const deleteUpload = async (req, res) => {
+  try {
+    const userId = await getUserIdFromToken(req);
+    if (!userId) return res.status(401).json({ error: "Not authorized" });
+
+    const { fileId } = req.body;
+
+    if (!fileId) {
+      return res.status(400).json({ error: "fileId is required" });
+    }
+
+    const result = await new Promise((resolve, reject) => {
+      imagekit.deleteFile(fileId, (err, res) => {
+        if (err) reject(err);
+        else resolve(res);
+      });
+    });
+
+    res.status(200).json({
+      message: "File deleted successfully",
+      result,
+    });
+  } catch (err) {
+    console.error("Delete upload error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// -------------------------
+// DELETE MULTIPLE UPLOADS
+// -------------------------
+export const deleteMultipleUploads = async (req, res) => {
+  try {
+    const userId = await getUserIdFromToken(req);
+    if (!userId) return res.status(401).json({ error: "Not authorized" });
+
+    const { fileIds } = req.body;
+
+    if (!Array.isArray(fileIds) || fileIds.length === 0) {
+      return res.status(400).json({
+        error: "fileIds array is required",
+      });
+    }
+
+    const results = [];
+
+    for (const fileId of fileIds) {
+      try {
+        const result = await new Promise((resolve, reject) => {
+          imagekit.deleteFile(fileId, (err, res) => {
+            if (err) reject(err);
+            else resolve(res);
+          });
+        });
+
+        results.push({ fileId, status: "deleted", result });
+      } catch (err) {
+        results.push({
+          fileId,
+          status: "error",
+          error: err.message,
+        });
+      }
+    }
+
+    res.status(200).json({
+      message: "Deletion processed",
+      results,
+    });
+  } catch (err) {
+    console.error("Delete Multiple Uploads Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// -------------------------
+// GET ALL POSTS
+// -------------------------
+export const getPosts = async (req, res) => {
+  try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
     const skip = (page - 1) * limit;
@@ -86,6 +222,7 @@ export const getPosts = async (req, res) => {
     const { cat, author, search, sort, featured } = req.query;
 
     if (cat) query.category = cat;
+
     if (featured === "true") query.isFeatured = true;
 
     if (search) {
@@ -94,145 +231,79 @@ export const getPosts = async (req, res) => {
 
     if (author) {
       const user = await User.findOne({ username: author }).select("_id");
-      if (!user) return res.status(404).json({ error: "User not found" });
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
       query.user = user._id;
     }
 
-    if (sort === "oldest") sortObj = { createdAt: 1 };
-    if (sort === "popular") sortObj = { visit: -1 };
-
-    if (sort === "trending") {
-      query.createdAt = {
-        $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      };
+    if (sort) {
+      switch (sort) {
+        case "newest":
+          sortObj = { createdAt: -1 };
+          break;
+        case "oldest":
+          sortObj = { createdAt: 1 };
+          break;
+        case "popular":
+          sortObj = { visit: -1 };
+          break;
+        case "trending":
+          sortObj = { createdAt: -1 };
+          query.createdAt = {
+            $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+          };
+          break;
+      }
     }
 
     const posts = await Post.find(query)
-      .select("title slug createdAt image category user isFeatured visit")
       .populate("user", "username")
       .sort(sortObj)
       .skip(skip)
       .limit(limit);
 
-    // lightweight "hasMore" check (no countDocuments)
-    const nextPosts = await Post.find(query)
-      .skip(skip + limit)
-      .limit(1);
+    const totalPosts = await Post.countDocuments(query);
+    const hasMore = page * limit < totalPosts;
 
-    const result = {
-      posts,
-      hasMore: nextPosts.length > 0,
-    };
-
-    postsCache.set(cacheKey, {
-      data: result,
-      time: Date.now(),
-    });
-
-    res.json(result);
+    res.status(200).json({ posts, hasMore });
   } catch (err) {
     console.error("Get Posts Error:", err);
     res.status(500).json({ error: err.message });
   }
 };
 
-/* -------------------------
-   GET SINGLE POST
-------------------------- */
+// -------------------------
+// GET POST BY SLUG
+// -------------------------
 export const getPost = async (req, res) => {
   try {
-    const post = await Post.findOne({ slug: req.params.slug }).populate(
-      "user",
-      "username img"
-    );
+    const post = await Post.findOne({
+      slug: req.params.slug,
+    }).populate("user", "username img");
 
-    if (!post) return res.status(404).json({ error: "Post not found" });
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
 
-    res.json(post);
+    res.status(200).json(post);
   } catch (err) {
     console.error("Get Post Error:", err);
     res.status(500).json({ error: err.message });
   }
 };
 
-/* -------------------------
-   DELETE POST
-------------------------- */
-export const deletePost = async (req, res) => {
-  try {
-    const userId = await getUserIdFromToken(req);
-    if (!userId) return res.status(401).json({ error: "Not authorized" });
-
-    const role = req.auth?.sessionClaims?.metadata?.role;
-
-    if (role === "admin") {
-      await Post.findByIdAndDelete(req.params.id);
-      postsCache.clear();
-      return res.json({ message: "Post deleted" });
-    }
-
-    const user = await User.findOne({ clerkUserId: userId });
-    if (!user) return res.status(404).json({ error: "User not found" });
-
-    const deleted = await Post.findOneAndDelete({
-      _id: req.params.id,
-      user: user._id,
-    });
-
-    if (!deleted) {
-      return res.status(404).json({ error: "Not found or unauthorized" });
-    }
-
-    postsCache.clear();
-
-    res.json({ message: "Post deleted" });
-  } catch (err) {
-    console.error("Delete Post Error:", err);
-    res.status(500).json({ error: err.message });
-  }
-};
-
-/* -------------------------
-   FEATURE POST
-------------------------- */
-export const featurePost = async (req, res) => {
-  try {
-    const userId = await getUserIdFromToken(req);
-    if (!userId) return res.status(401).json({ error: "Not authorized" });
-
-    const role = req.auth?.sessionClaims?.metadata?.role;
-    if (role !== "admin") {
-      return res.status(403).json({ error: "Not allowed" });
-    }
-
-    const { postId } = req.body;
-
-    const post = await Post.findById(postId);
-    if (!post) return res.status(404).json({ error: "Not found" });
-
-    const updated = await Post.findByIdAndUpdate(
-      postId,
-      { isFeatured: !post.isFeatured },
-      { new: true }
-    );
-
-    postsCache.clear();
-
-    res.json(updated);
-  } catch (err) {
-    console.error("Feature Error:", err);
-    res.status(500).json({ error: err.message });
-  }
-};
-
-/* -------------------------
-   IMAGEKIT AUTH
-------------------------- */
+// -------------------------
+// IMAGEKIT AUTH
+// -------------------------
 export const uploadAuth = async (req, res) => {
   try {
-    const auth = imagekit.getAuthenticationParameters();
-    res.json(auth);
+    const authParams = imagekit.getAuthenticationParameters();
+    res.status(200).json(authParams);
   } catch (err) {
+    console.error("ImageKit Auth Error:", err);
     res.status(500).json({ error: err.message });
   }
 };
