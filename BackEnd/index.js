@@ -1,4 +1,3 @@
-// index.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -23,41 +22,36 @@ dotenv.config();
 
 const app = express();
 
-/* --------------------------------
-   🌐 CORS CONFIG
--------------------------------- */
+/* ---------------- CORS ---------------- */
 app.use(
   cors({
-    origin: process.env.CLIENT_URL, // e.g. http://localhost:5173
+    origin: process.env.CLIENT_URL,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-/* --------------------------------
-   🚨 CLERK WEBHOOK (RAW BODY)
-   ⚠️ MUST BE BEFORE express.json()
--------------------------------- */
+/* ---------------- HEALTH CHECK (IMPORTANT FOR UPTIME PING) ---------------- */
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    time: new Date().toISOString(),
+  });
+});
+
+/* ---------------- WEBHOOK (must be before json parser) ---------------- */
 app.post(
   "/webhooks/clerk",
   express.raw({ type: "application/json" }),
   clerkWebHook
 );
 
-/* --------------------------------
-   BODY PARSER
--------------------------------- */
+/* ---------------- BODY PARSER ---------------- */
 app.use(express.json());
-
-/* --------------------------------
-   CLERK AUTH MIDDLEWARE
--------------------------------- */
 app.use(clerkMiddleware());
 
-/* --------------------------------
-   ROUTES
--------------------------------- */
+/* ---------------- ROUTES ---------------- */
 app.get("/", (req, res) => {
   res.send("🚀 API is running");
 });
@@ -68,13 +62,10 @@ app.use("/posts", postRouter);
 app.use("/maps", mapRouter);
 app.use("/images", imageRouter);
 
-/* ✅ CONTACT US (PUBLIC) */
 app.use("/api/contact", contactRoutes);
 app.use("/api/admin", adminRoutes);
 
-/* --------------------------------
-   GLOBAL ERROR HANDLER
--------------------------------- */
+/* ---------------- GLOBAL ERROR HANDLER ---------------- */
 app.use((err, req, res, next) => {
   console.error("🔥 Error:", err);
   res.status(err.status || 500).json({
@@ -82,12 +73,22 @@ app.use((err, req, res, next) => {
   });
 });
 
-/* --------------------------------
-   START SERVER
--------------------------------- */
+/* ---------------- START SERVER (FIXED ORDER) ---------------- */
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, async () => {
-  await connectDB();
-  console.log(`✅ Server running on http://localhost:${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    console.log("✅ MongoDB connected");
+
+    app.listen(PORT, () => {
+      console.log(`✅ Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("❌ Server failed to start:", err.message);
+    process.exit(1);
+  }
+};
+
+startServer();
