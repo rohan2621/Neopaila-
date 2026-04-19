@@ -55,7 +55,12 @@ app.use(clerkMiddleware());
 app.get("/", (req, res) => {
   res.send("🚀 API is running");
 });
-
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    time: new Date().toISOString(),
+  });
+});
 app.use("/users", userRouter);
 app.use("/comments", commentRouter);
 app.use("/posts", postRouter);
