@@ -15,7 +15,8 @@ const LoginPage = () => {
   }, []);
   return (
     <div className="flex login px-2 md:px-4 lg:px-8 xl:px-16 2xl:px-32 items-center justify-center h-[calc(100vh-80px)]">
-      <SignIn
+     <SignIn
+  routing="hash"
   fallbackRedirectUrl="/continue"
   signUpForceRedirectUrl="/continue"
 />
