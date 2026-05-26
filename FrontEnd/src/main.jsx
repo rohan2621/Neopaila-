@@ -1,7 +1,7 @@
 // main.jsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import "./index.css";
 import "leaflet/dist/leaflet.css";
@@ -49,7 +49,7 @@ createRoot(document.getElementById("root")).render(
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
       <QueryClientProvider client={queryClient}>
         <SmoothScroll>
-          <HashRouter>
+          <BrowserRouter>
             <Routes>
               {/* Main Layout wrapper */}
               <Route element={<MainLayout />}>
@@ -86,7 +86,8 @@ createRoot(document.getElementById("root")).render(
                 <Route path="*" element={<PageNotFound />} />
               </Route>
             </Routes>
-          </HashRouter>
+          </BrowserRouter>
+
           <ToastContainer position="bottom-right" />
         </SmoothScroll>
       </QueryClientProvider>
