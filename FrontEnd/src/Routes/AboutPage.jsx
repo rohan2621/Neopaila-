@@ -429,7 +429,7 @@ const AboutPage = () => {
             className="relative rounded-3xl overflow-hidden shadow-2xl order-last lg:order-first"
           >
             <Img
-              src={"heritage"}
+              src={"cover_1.jpg"}
               className="w-full h-80 lg:h-96 object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
