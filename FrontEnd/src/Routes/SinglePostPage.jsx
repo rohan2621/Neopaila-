@@ -60,7 +60,7 @@ export const SinglePostPage = () => {
             <Img
               src={data.img}
               w={1000}
-              className="rounded-2xl object-cover w-full max-h-[420px]"
+              className="rounded-2xl object-cover w-full h-[300px] md:h-[420px]"
               alt={data.title}
             />
           </div>
@@ -68,9 +68,9 @@ export const SinglePostPage = () => {
       </div>
 
       {/* ---------------- Content + Sidebar ---------------- */}
-      <div className="flex flex-col md:flex-row gap-12 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-12">
         {/* Main content */}
-        <div className="flex-1 min-w-0 flex flex-col gap-6 lg:text-lg text-justify">
+        <div className="flex-1 min-w-0 max-w-none flex flex-col gap-6 lg:text-lg">
           {data.content ? (
             <div
               className="quill-content"
@@ -84,7 +84,7 @@ export const SinglePostPage = () => {
           {data.location?.lat && data.location?.lng && (
             <div className="mt-8 w-full">
               <h2 className="text-lg font-medium mb-2">📍 Location</h2>
-              <div style={{ height: "300px", width: "100%" }}>
+              <div className="h-[350px] w-full overflow-hidden">
                 <MapContainer
                   center={[data.location.lat, data.location.lng]}
                   zoom={13}
@@ -103,7 +103,7 @@ export const SinglePostPage = () => {
         </div>
 
         {/* Sidebar */}
-        <div className="w-full md:w-[280px] shrink-0 px-4 h-max sticky top-8">
+        <div className="w-full lg:w-[300px] shrink-0 lg:sticky lg:top-24">
           <h1 className="mb-4 text-sm font-medium">Author</h1>
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-4">

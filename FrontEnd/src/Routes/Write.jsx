@@ -93,36 +93,43 @@ export const Write = () => {
 
   // ← NEW: Paste cleaner — converts plain-text pastes into clean <p> paragraphs
   useEffect(() => {
-    const editor = quillRef.current?.getEditor();
+    const timer = setTimeout(() => {
+      const editor = quillRef.current?.getEditor();
 
-    if (!editor) return;
+      if (!editor) return;
 
-    const handlePaste = (e) => {
-      e.preventDefault();
+      const handlePaste = (e) => {
+        const html = e.clipboardData.getData("text/html");
 
-      const text = e.clipboardData.getData("text/plain");
+        // Allow formatted HTML pastes from websites, Word, ChatGPT, etc.
+        if (html) return;
 
-      if (!text) return;
+        e.preventDefault();
 
-      const html = text
-        .split(/\n\s*\n/)
-        .filter((p) => p.trim())
-        .map((p) => `<p>${p.trim()}</p>`)
-        .join("");
+        const text = e.clipboardData.getData("text/plain");
 
-      const range = editor.getSelection();
+        const paragraphs = text
+          .split(/\n\s*\n/)
+          .filter(Boolean)
+          .map((p) => `<p>${p.trim()}</p>`)
+          .join("");
 
-      editor.clipboard.dangerouslyPasteHTML(
-        range ? range.index : editor.getLength(),
-        html,
-      );
-    };
+        const range = editor.getSelection(true);
 
-    editor.root.addEventListener("paste", handlePaste);
+        editor.clipboard.dangerouslyPasteHTML(
+          range?.index ?? editor.getLength(),
+          paragraphs,
+        );
+      };
 
-    return () => {
-      editor.root.removeEventListener("paste", handlePaste);
-    };
+      editor.root.addEventListener("paste", handlePaste);
+
+      return () => {
+        editor.root.removeEventListener("paste", handlePaste);
+      };
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   // Scroll animations
@@ -365,9 +372,7 @@ export const Write = () => {
           {/* Editor */}
           <div
             ref={addToRefs}
-            className={`flex-1 rounded-xl bg-white shadow-sm hover:shadow-md transition min-h-[160px] relative ${
-              hasMedia ? "h-40 md:h-60" : "h-60 md:h-[400px]"
-            } overflow-hidden`}
+            className="flex-1 rounded-xl bg-white shadow-sm hover:shadow-md transition min-h-[600px]"
           >
             {/* ← UPDATED: added ref={quillRef} and modules={modules} */}
             <ReactQuill

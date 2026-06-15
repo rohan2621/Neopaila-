@@ -12,82 +12,112 @@
   background-color: #c8a4a4;
   color: #111;
 }
-
-/* =========================================
-   QUILL EDITOR STYLES (Write page)
-========================================= */
-.ql-editor {
-  min-height: 500px;
-  font-size: 18px;
-  line-height: 1.9;
-  color: #222;
-}
-
-.ql-editor p {
-  margin-bottom: 18px;
-}
-
-.ql-editor h1,
-.ql-editor h2,
-.ql-editor h3 {
-  margin-top: 24px;
-  margin-bottom: 16px;
-}
-
-.ql-editor img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 12px;
-  margin: 20px auto;
-  display: block;
-}
+/* ==========================
+   QUILL EDITOR
+========================== */
 
 .ql-container {
   border: none !important;
+  font-size: 18px;
 }
 
 .ql-toolbar {
   border: none !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .ql-editor {
-  border: none !important;
+  min-height: 600px;
+  padding: 24px;
+  font-size: 18px;
+  line-height: 1.9;
+  color: #222;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
-/* =========================================
-   QUILL CONTENT STYLES (Post detail page)
-========================================= */
-.quill-content img {
+.ql-editor p {
+  margin-bottom: 1rem;
+}
+
+.ql-editor h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 1.5rem 0 1rem;
+}
+
+.ql-editor h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 1.25rem 0 0.75rem;
+}
+
+.ql-editor h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+}
+
+.ql-editor img {
+  display: block;
   max-width: 100%;
-  border-radius: 10px;
-  margin: 12px 0;
+  height: auto;
+  margin: 24px auto;
+  border-radius: 12px;
+}
+
+.ql-editor ul,
+.ql-editor ol {
+  padding-left: 2rem;
+  margin-bottom: 1rem;
+}
+
+.ql-editor blockquote {
+  border-left: 4px solid #540000;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #555;
+}
+.quill-content {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.quill-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin: 1.5rem auto;
+}
+
+.quill-content iframe,
+.quill-content video {
+  max-width: 100%;
 }
 
 .quill-content p {
-  margin-bottom: 1rem;
-  line-height: 1.7;
+  margin-bottom: 1.2rem;
+  line-height: 1.9;
 }
 
 .quill-content h1,
 .quill-content h2,
 .quill-content h3 {
-  font-weight: bold;
-  margin-top: 1.5rem;
-  margin-bottom: 0.8rem;
-}
-
-.quill-content ul,
-.quill-content ol {
-  padding-left: 1.4rem;
+  margin-top: 2rem;
   margin-bottom: 1rem;
+  font-weight: 700;
 }
-
 /* =========================================
    BODY
 ========================================= */
 body {
-  font-family: "font-serif", font-serif;
-  width: 100vw;
+  font-family: serif;
+  width: 100%;
   overflow-x: hidden;
 }
 
