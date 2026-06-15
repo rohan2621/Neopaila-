@@ -1,4 +1,4 @@
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import { useUser, useAuth } from "@clerk/clerk-react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -20,12 +20,27 @@ export const Write = () => {
   const navigate = useNavigate();
 
   const [value, setValue] = useState("");
+  const quillRef = useRef(null); // ← NEW: Quill ref
   const [progress, setProgress] = useState(0);
   const [cover, setCover] = useState(null);
   const [media, setMedia] = useState([]);
   const [location, setLocation] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [deletingFileId, setDeletingFileId] = useState(null);
+
+  // ← NEW: Quill toolbar + clipboard modules
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline"],
+      ["link"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["clean"],
+    ],
+    clipboard: {
+      matchVisual: false,
+    },
+  };
 
   // Scroll animation refs
   const refs = useRef([]);
@@ -56,7 +71,7 @@ export const Write = () => {
       return axios.post(
         `${import.meta.env.VITE_API_URL}/posts/uploads/delete`,
         { fileId },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
     },
     onSuccess: () => toast.success("Media deleted successfully"),
@@ -67,7 +82,7 @@ export const Write = () => {
   React.useEffect(() => {
     if (!media.length) return;
     const newMedia = media.filter(
-      (m) => !value.includes(m.url) && m.type === "image"
+      (m) => !value.includes(m.url) && m.type === "image",
     );
     if (!newMedia.length) return;
     const newContent = newMedia
@@ -75,6 +90,40 @@ export const Write = () => {
       .join("");
     setValue((prev) => prev + newContent);
   }, [media]);
+
+  // ← NEW: Paste cleaner — converts plain-text pastes into clean <p> paragraphs
+  useEffect(() => {
+    const editor = quillRef.current?.getEditor();
+
+    if (!editor) return;
+
+    const handlePaste = (e) => {
+      e.preventDefault();
+
+      const text = e.clipboardData.getData("text/plain");
+
+      if (!text) return;
+
+      const html = text
+        .split(/\n\s*\n/)
+        .filter((p) => p.trim())
+        .map((p) => `<p>${p.trim()}</p>`)
+        .join("");
+
+      const range = editor.getSelection();
+
+      editor.clipboard.dangerouslyPasteHTML(
+        range ? range.index : editor.getLength(),
+        html,
+      );
+    };
+
+    editor.root.addEventListener("paste", handlePaste);
+
+    return () => {
+      editor.root.removeEventListener("paste", handlePaste);
+    };
+  }, []);
 
   // Scroll animations
   useLayoutEffect(() => {
@@ -94,10 +143,9 @@ export const Write = () => {
             trigger: el,
             start: "top 90%",
             end: "bottom 10%",
-            toggleActions: "play reverse play reverse", // animate down & up
-            // scrub: 0.2, // optional: smooth scroll animation
+            toggleActions: "play reverse play reverse",
           },
-        }
+        },
       );
 
       // Special handling for ReactQuill container
@@ -106,7 +154,7 @@ export const Write = () => {
         gsap.fromTo(
           quillContent,
           { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }
+          { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
         );
       }
     });
@@ -283,7 +331,7 @@ export const Write = () => {
                 <div
                   key={m.fileId}
                   className="relative w-32 h-32 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition transform hover:scale-105"
-                  ref={addToRefs} // animate each media preview
+                  ref={addToRefs}
                 >
                   {m.type === "image" ? (
                     <img
@@ -316,15 +364,18 @@ export const Write = () => {
 
           {/* Editor */}
           <div
-            ref={addToRefs} // animate container
+            ref={addToRefs}
             className={`flex-1 rounded-xl bg-white shadow-sm hover:shadow-md transition min-h-[160px] relative ${
               hasMedia ? "h-40 md:h-60" : "h-60 md:h-[400px]"
             } overflow-hidden`}
           >
+            {/* ← UPDATED: added ref={quillRef} and modules={modules} */}
             <ReactQuill
+              ref={quillRef}
               value={value}
               onChange={setValue}
               theme="snow"
+              modules={modules}
               readOnly={progress > 0 && progress < 100}
               className="h-full rounded-xl"
             />
