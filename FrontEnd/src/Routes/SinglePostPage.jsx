@@ -28,46 +28,49 @@ export const SinglePostPage = () => {
   if (!data) return <p>Post not found!</p>;
 
   return (
-    <div className="flex flex-col gap-8 px-2 md:px-4 lg:px-8 xl:px-16 2xl:px-32">
-      {/* ---------------- Details ---------------- */}
-      <div className="flex gap-8">
-        <div className="lg:w-3/5 flex flex-col gap-8">
-          <h1 className="text-xl md:text-3xl xl:text-4xl 2xl:text-5xl font-semibold">
+    <div className="flex flex-col gap-8 px-4 md:px-8 lg:px-16 xl:px-24 2xl:px-40 py-8 max-w-screen-xl mx-auto">
+      {/* ---------------- Hero: Title + Cover Image ---------------- */}
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
+        {/* Left: title, meta, desc */}
+        <div className="flex-1 flex flex-col gap-4">
+          <h1 className="text-2xl md:text-4xl xl:text-5xl font-semibold leading-tight">
             {data.title}
           </h1>
 
-          <div className="flex items-center gap-2 text-gray-400 text-sm">
+          <div className="flex flex-wrap items-center gap-2 text-gray-400 text-sm">
             <span>Written by</span>
-            <Link className="text-blue-800">
+            <Link className="text-blue-800 hover:underline">
               {data.user?.username || "Unknown"}
             </Link>
             <span>on</span>
-            <Link className="text-blue-800">{data.category}</Link>
+            <Link className="text-blue-800 hover:underline capitalize">
+              {data.category}
+            </Link>
             <span>{format(data.createdAt)}</span>
           </div>
 
-          <p className="text-gray-500 font-medium">{data.desc}</p>
+          <p className="text-gray-500 font-medium text-base md:text-lg">
+            {data.desc}
+          </p>
         </div>
 
-        {/* ---------------- Cover Image ---------------- */}
-        <div className="hidden lg:flex w-2/5  items-center justify-center">
-          {data.img && (
-            <div className="w-full lg:w-[50%] flex justify-center items-start">
-              <Img
-                src={data.img}
-                w={1000}
-                className="rounded-2xl object-cover w-full max-h-[450px] lg:max-h-[550px]"
-                alt={data.title}
-              />
-            </div>
-          )}
-        </div>
+        {/* Right: cover image */}
+        {data.img && (
+          <div className="w-full lg:w-[420px] shrink-0">
+            <Img
+              src={data.img}
+              w={1000}
+              className="rounded-2xl object-cover w-full max-h-[420px]"
+              alt={data.title}
+            />
+          </div>
+        )}
       </div>
 
-      {/* ---------------- Content & Sidebar ---------------- */}
+      {/* ---------------- Content + Sidebar ---------------- */}
       <div className="flex flex-col md:flex-row gap-12 items-start">
-        {/* Post Text */}
-        <div className="flex-1 lg:text-lg flex flex-col gap-6 text-justify">
+        {/* Main content */}
+        <div className="flex-1 min-w-0 flex flex-col gap-6 lg:text-lg text-justify">
           {data.content ? (
             <div
               className="quill-content"
@@ -78,27 +81,29 @@ export const SinglePostPage = () => {
           )}
 
           {/* ---------------- Map ---------------- */}
-          {data.location && data.location.lat && data.location.lng && (
-            <div className="mt-8">
+          {data.location?.lat && data.location?.lng && (
+            <div className="mt-8 w-full">
               <h2 className="text-lg font-medium mb-2">📍 Location</h2>
-              <MapContainer
-                center={[data.location.lat, data.location.lng]}
-                zoom={13}
-                style={{ height: "300px", width: "100%" }}
-                className="rounded-xl shadow-md"
-              >
-                <TileLayer
-                  attribution="© OpenStreetMap"
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <Marker position={[data.location.lat, data.location.lng]} />
-              </MapContainer>
+              <div style={{ height: "300px", width: "100%" }}>
+                <MapContainer
+                  center={[data.location.lat, data.location.lng]}
+                  zoom={13}
+                  style={{ height: "100%", width: "100%" }}
+                  className="rounded-xl shadow-md"
+                >
+                  <TileLayer
+                    attribution="© OpenStreetMap"
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <Marker position={[data.location.lat, data.location.lng]} />
+                </MapContainer>
+              </div>
             </div>
           )}
         </div>
 
         {/* Sidebar */}
-        <div className="w-full md:w-[300px] px-5 h-max sticky top-8">
+        <div className="w-full md:w-[280px] shrink-0 px-4 h-max sticky top-8">
           <h1 className="mb-4 text-sm font-medium">Author</h1>
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-4">
@@ -108,12 +113,13 @@ export const SinglePostPage = () => {
                 w={48}
                 h={48}
               />
-              <Link>{data.user?.username || "John Doe"}</Link>
+              <Link className="hover:underline">
+                {data.user?.username || "John Doe"}
+              </Link>
             </div>
             <p className="text-sm text-gray-500">
               {data.user?.bio || "No bio available."}
             </p>
-            0
           </div>
 
           <PostMenuAction post={data} />
@@ -121,7 +127,11 @@ export const SinglePostPage = () => {
           <h1 className="mt-8 mb-4 text-sm font-medium">Categories</h1>
           <div className="flex flex-col gap-2 text-sm">
             {MainCateValues.map((link, i) => (
-              <Link key={i} to={link.path} className="underline">
+              <Link
+                key={i}
+                to={link.path}
+                className="underline hover:text-[#540000]"
+              >
                 {link.name}
               </Link>
             ))}

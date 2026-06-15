@@ -1,6 +1,21 @@
 @import "tailwindcss";
 
-/* Quill Editor Styles */
+/* =========================================
+   TEXT SELECTION
+========================================= */
+::selection {
+  background-color: #c8a4a4;
+  color: #111;
+}
+
+::-moz-selection {
+  background-color: #c8a4a4;
+  color: #111;
+}
+
+/* =========================================
+   QUILL EDITOR STYLES (Write page)
+========================================= */
 .ql-editor {
   min-height: 500px;
   font-size: 18px;
@@ -26,34 +41,22 @@
   margin: 20px auto;
   display: block;
 }
-body {
-  font-family: "font-serif", font-serif;
-  width: 100vw;
-  overflow-x: hidden;
-}
 
-@keyframes waveMove {
-  from {
-    background-position-x: 0;
-  }
-
-  to {
-    background-position-x: 120px;
-  }
-}
-
-.animate-wave {
-  animation: waveMove 6s linear infinite;
-}
 .ql-container {
   border: none !important;
 }
+
 .ql-toolbar {
   border: none !important;
 }
+
 .ql-editor {
   border: none !important;
 }
+
+/* =========================================
+   QUILL CONTENT STYLES (Post detail page)
+========================================= */
 .quill-content img {
   max-width: 100%;
   border-radius: 10px;
@@ -78,12 +81,37 @@ body {
   padding-left: 1.4rem;
   margin-bottom: 1rem;
 }
+
+/* =========================================
+   BODY
+========================================= */
+body {
+  font-family: "font-serif", font-serif;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+/* =========================================
+   ANIMATIONS
+========================================= */
+@keyframes waveMove {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: 120px;
+  }
+}
+
+.animate-wave {
+  animation: waveMove 6s linear infinite;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: scale(0.96);
   }
-
   to {
     opacity: 1;
     transform: scale(1);
@@ -93,6 +121,10 @@ body {
 .animate-fadeIn {
   animation: fadeIn 0.25s ease-out;
 }
+
+/* =========================================
+   CUSTOM SCROLLBAR
+========================================= */
 * {
   scrollbar-width: thin;
   scrollbar-color: #540000 transparent;
@@ -101,11 +133,10 @@ body {
 /* Chrome, Edge, Safari */
 ::-webkit-scrollbar {
   width: 6px;
-  /* thinner = classy */
   height: 6px;
 }
 
-/* REMOVE ARROWS (IMPORTANT) */
+/* Remove arrows */
 ::-webkit-scrollbar-button {
   display: none;
   width: 0;
@@ -116,7 +147,6 @@ body {
 ::-webkit-scrollbar-track {
   background: transparent;
   margin: 6px 0;
-  /* breathing room */
 }
 
 /* Thumb */
@@ -138,11 +168,6 @@ body {
   background: #3a0000;
 }
 
-/* =========================================
-   OPTIONAL: SCROLLBAR ONLY APPEARS ON SCROLL
-   (comment out if you want always visible)
-========================================= */
-
 body::-webkit-scrollbar-thumb {
   opacity: 0.6;
 }
@@ -151,15 +176,16 @@ body:hover::-webkit-scrollbar-thumb {
   opacity: 1;
 }
 
-/* =========================================
-   MOBILE SAFETY
-========================================= */
-
+/* Mobile */
 @media (max-width: 768px) {
   ::-webkit-scrollbar {
     width: 3px;
   }
 }
+
+/* =========================================
+   LENIS SMOOTH SCROLL
+========================================= */
 html.lenis {
   height: auto;
 }
