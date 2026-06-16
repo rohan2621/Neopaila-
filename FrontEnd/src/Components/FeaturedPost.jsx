@@ -110,7 +110,7 @@ const FeaturedPost = () => {
   return (
     <section
       ref={containerRef}
-      className="flex flex-col lg:flex-row gap-8 mt-8"
+      className="grid grid-cols-1 lg:grid-cols-[1.4fr_0.9fr] gap-10 mt-10"
     >
       {/* MAIN POST */}
       <Link
@@ -121,37 +121,27 @@ const FeaturedPost = () => {
       >
         {/* FIXED IMAGE HANDLING */}
         {(mainPost.img || mainPost.image) && (
-          <div className="relative w-full h-[500px] rounded-3xl overflow-hidden">
-            {/* Blurred background */}
-            <Img
-              src={mainPost.img || mainPost.image}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover scale-110 blur-3xl opacity-40"
-              noSize
-            />
-
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/5" />
-
-            {/* Real image */}
-            <div className="relative z-10 flex items-center justify-center h-full p-6">
+          <div className="rounded-[32px] bg-gradient-to-br from-[#f7f2eb] to-[#efe7db] p-4 shadow-sm border border-[#ebe4da]">
+            <div className="overflow-hidden rounded-[24px] flex items-center justify-center h-[480px]">
               <Img
                 src={mainPost.img || mainPost.image}
                 alt={mainPost.title}
-                className="max-h-full max-w-full object-contain drop-shadow-2xl"
+                className="max-w-full max-h-full object-contain transition duration-700 hover:scale-105"
                 noSize
               />
             </div>
           </div>
         )}
 
-        <div className="flex gap-4 text-sm">
+        <div className="flex items-center gap-3 text-sm text-gray-500 uppercase tracking-wide">
           <span className="font-semibold">01.</span>
           <span className="text-blue-600">{mainPost.category}</span>
           <span className="text-gray-400">{format(mainPost.createdAt)}</span>
         </div>
 
-        <h2 className="text-2xl lg:text-4xl font-bold">{mainPost.title}</h2>
+        <h2 className="text-3xl lg:text-5xl font-bold leading-tight tracking-tight text-[#1f1f1f]">
+          {mainPost.title}
+        </h2>
       </Link>
 
       {/* SIDE POSTS */}
@@ -166,21 +156,12 @@ const FeaturedPost = () => {
           >
             {/* FIXED IMAGE HANDLING */}
             {(post.img || post.image) && (
-              <div className="relative w-[280px] h-[160px] rounded-xl overflow-hidden flex-shrink-0">
-                {/* Blurred background */}
-                <Img
-                  src={post.img || post.image}
-                  alt=""
-                  className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-40"
-                  noSize
-                />
-
-                {/* Actual image */}
-                <div className="relative z-10 flex items-center justify-center h-full p-2">
+              <div className="w-[280px] h-[170px] rounded-2xl bg-gradient-to-br from-[#f7f2eb] to-[#efe7db] p-2 shadow-sm border border-[#ebe4da] flex-shrink-0">
+                <div className="overflow-hidden rounded-xl h-full flex items-center justify-center">
                   <Img
                     src={post.img || post.image}
                     alt={post.title}
-                    className="max-h-full max-w-full object-contain"
+                    className="max-w-full max-h-full object-contain transition duration-500 hover:scale-105"
                     noSize
                   />
                 </div>
@@ -196,7 +177,9 @@ const FeaturedPost = () => {
                 <span className="text-gray-400">{format(post.createdAt)}</span>
               </div>
 
-              <div className="font-semibold line-clamp-2">{post.title}</div>
+              <div className="font-semibold text-xl leading-snug line-clamp-2 text-[#1f1f1f]">
+                {post.title}
+              </div>
             </div>
           </Link>
         ))}
