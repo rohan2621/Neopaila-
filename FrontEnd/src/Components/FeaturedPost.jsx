@@ -121,13 +121,27 @@ const FeaturedPost = () => {
       >
         {/* FIXED IMAGE HANDLING */}
         {(mainPost.img || mainPost.image) && (
-          <div className="w-full h-[500px] rounded-3xl overflow-hidden bg-[#f7f4ee] flex items-center justify-center">
+          <div className="relative w-full h-[500px] rounded-3xl overflow-hidden">
+            {/* Blurred background */}
             <Img
               src={mainPost.img || mainPost.image}
-              alt={mainPost.title}
-              className="max-w-full max-h-full object-contain"
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover scale-110 blur-3xl opacity-40"
               noSize
             />
+
+            {/* Overlay */}
+            <div className="absolute inset-0 bg-black/5" />
+
+            {/* Real image */}
+            <div className="relative z-10 flex items-center justify-center h-full p-6">
+              <Img
+                src={mainPost.img || mainPost.image}
+                alt={mainPost.title}
+                className="max-h-full max-w-full object-contain drop-shadow-2xl"
+                noSize
+              />
+            </div>
           </div>
         )}
 
@@ -152,13 +166,24 @@ const FeaturedPost = () => {
           >
             {/* FIXED IMAGE HANDLING */}
             {(post.img || post.image) && (
-              <div className="w-[280px] h-[160px] rounded-xl overflow-hidden bg-[#f7f4ee] flex items-center justify-center flex-shrink-0">
+              <div className="relative w-[280px] h-[160px] rounded-xl overflow-hidden flex-shrink-0">
+                {/* Blurred background */}
                 <Img
                   src={post.img || post.image}
-                  alt={post.title}
-                  className="max-w-full max-h-full object-contain"
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-40"
                   noSize
                 />
+
+                {/* Actual image */}
+                <div className="relative z-10 flex items-center justify-center h-full p-2">
+                  <Img
+                    src={post.img || post.image}
+                    alt={post.title}
+                    className="max-h-full max-w-full object-contain"
+                    noSize
+                  />
+                </div>
               </div>
             )}
 
