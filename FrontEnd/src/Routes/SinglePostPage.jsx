@@ -28,9 +28,9 @@ export const SinglePostPage = () => {
   if (!data) return <p>Post not found!</p>;
 
   return (
-    <div className="flex flex-col gap-8 px-4 md:px-8 lg:px-16 xl:px-24 2xl:px-40 py-8 max-w-screen-xl mx-auto">
+    <div className="max-w-[1280px] mx-auto px-6 lg:px-8 py-10">
       {/* ---------------- Hero: Title + Cover Image ---------------- */}
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_520px] gap-16 items-start mb-12">
         {/* Left: title, meta, desc */}
         <div className="flex-1 flex flex-col gap-4">
           <h1 className="text-2xl md:text-4xl xl:text-5xl font-semibold leading-tight">
@@ -56,7 +56,7 @@ export const SinglePostPage = () => {
 
         {/* Right: cover image */}
         {data.img && (
-          <div className="w-full lg:w-[420px] shrink-0">
+          <div className="w-full max-w-[500px]">
             <Img
               src={data.img}
               w={1000}
@@ -68,9 +68,9 @@ export const SinglePostPage = () => {
       </div>
 
       {/* ---------------- Content + Sidebar ---------------- */}
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-12 mt-10">
         {/* Main content */}
-        <div className="flex-1 min-w-0 max-w-none flex flex-col gap-6 lg:text-lg">
+        <div className="min-w-0 max-w-[850px] flex flex-col gap-8 text-lg leading-8">
           {data.content ? (
             <div
               className="quill-content"
@@ -103,7 +103,7 @@ export const SinglePostPage = () => {
         </div>
 
         {/* Sidebar */}
-        <div className="w-full lg:w-[300px] shrink-0 lg:sticky lg:top-24">
+        <div className="w-full lg:sticky lg:top-24">
           <h1 className="mb-4 text-sm font-medium">Author</h1>
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-4">

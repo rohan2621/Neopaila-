@@ -120,11 +120,12 @@ const FeaturedPost = () => {
         onMouseLeave={handleLeave}
       >
         {/* FIXED IMAGE HANDLING */}
-        {mainPost.image && (
+        {(mainPost.img || mainPost.image) && (
           <Img
-            src={mainPost.image}
+            src={mainPost.img || mainPost.image}
             alt={mainPost.title}
-            className="rounded-3xl aspect-video object-cover"
+            className="w-full rounded-3xl"
+            noSize
           />
         )}
 
@@ -148,11 +149,12 @@ const FeaturedPost = () => {
             onMouseLeave={handleLeave}
           >
             {/* FIXED IMAGE HANDLING */}
-            {post.image && (
+            {(post.img || post.image) && (
               <Img
-                src={post.image}
+                src={post.img || post.image}
                 alt={post.title}
-                className="w-1/3 aspect-video rounded-xl object-cover"
+                className="w-[280px] rounded-xl flex-shrink-0"
+                noSize
               />
             )}
 
