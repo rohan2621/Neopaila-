@@ -21,7 +21,7 @@ const Skeleton = ({ className }) => (
 );
 
 const FeaturedPostSkeleton = () => (
-  <section className="grid grid-cols-1 lg:grid-cols-[1.4fr_0.9fr] gap-8 mt-10 items-start">
+  <section className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-8 mt-10 items-start">
     <div className="flex flex-col gap-4">
       <Skeleton className="w-full h-[380px] rounded-3xl" />
       <Skeleton className="w-3/4 h-6" />
@@ -31,9 +31,9 @@ const FeaturedPostSkeleton = () => (
       {[1, 2, 3, 4].map((i) => (
         <div
           key={i}
-          className="flex gap-4 py-4 border-b border-gray-100 last:border-0"
+          className="flex gap-4 py-5 border-b border-gray-100 last:border-0"
         >
-          <Skeleton className="w-[120px] h-[82px] rounded-2xl flex-shrink-0" />
+          <Skeleton className="w-[160px] h-[110px] rounded-2xl flex-shrink-0" />
           <div className="flex-1 flex flex-col gap-2 pt-1">
             <Skeleton className="w-2/5 h-3.5" />
             <Skeleton className="w-full h-4" />
@@ -124,7 +124,7 @@ const FeaturedPost = () => {
   return (
     <section
       ref={containerRef}
-      className="grid grid-cols-1 lg:grid-cols-[1.4fr_0.9fr] gap-8 mt-10 items-start"
+      className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-8 mt-10 items-start"
     >
       {/* ── MAIN POST ── */}
       <Link
@@ -171,12 +171,12 @@ const FeaturedPost = () => {
           <Link
             key={post._id}
             to={`/${post.slug}`}
-            className="flex gap-4 py-4 first:pt-0 last:pb-0 animate-post group"
+            className="flex gap-4 py-5 first:pt-0 last:pb-0 animate-post group"
             onMouseEnter={handleHover}
             onMouseLeave={handleLeave}
           >
             {(post.img || post.image) && (
-              <div className="w-[120px] h-[82px] rounded-2xl overflow-hidden bg-[#f3ede4] border border-[#e8dfd2] flex-shrink-0 transition duration-300 group-hover:scale-[1.04]">
+              <div className="w-[160px] h-[110px] rounded-2xl overflow-hidden bg-[#f3ede4] border border-[#e8dfd2] flex-shrink-0 transition duration-300 group-hover:scale-[1.04]">
                 <Img
                   src={post.img || post.image}
                   alt={post.title}
@@ -197,7 +197,7 @@ const FeaturedPost = () => {
                 </span>
               </div>
 
-              <p className="text-[15px] font-medium leading-snug line-clamp-2 text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
+              <p className="text-base font-medium leading-snug line-clamp-2 text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
                 {post.title}
               </p>
             </div>
