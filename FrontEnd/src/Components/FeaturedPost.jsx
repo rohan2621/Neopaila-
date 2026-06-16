@@ -121,12 +121,14 @@ const FeaturedPost = () => {
       >
         {/* FIXED IMAGE HANDLING */}
         {(mainPost.img || mainPost.image) && (
-          <Img
-            src={mainPost.img || mainPost.image}
-            alt={mainPost.title}
-            className="w-full rounded-3xl"
-            noSize
-          />
+          <div className="w-full h-[500px] rounded-3xl overflow-hidden bg-[#f7f4ee] flex items-center justify-center">
+            <Img
+              src={mainPost.img || mainPost.image}
+              alt={mainPost.title}
+              className="max-w-full max-h-full object-contain"
+              noSize
+            />
+          </div>
         )}
 
         <div className="flex gap-4 text-sm">
@@ -150,12 +152,14 @@ const FeaturedPost = () => {
           >
             {/* FIXED IMAGE HANDLING */}
             {(post.img || post.image) && (
-              <Img
-                src={post.img || post.image}
-                alt={post.title}
-                className="w-[280px] rounded-xl flex-shrink-0"
-                noSize
-              />
+              <div className="w-[280px] h-[160px] rounded-xl overflow-hidden bg-[#f7f4ee] flex items-center justify-center flex-shrink-0">
+                <Img
+                  src={post.img || post.image}
+                  alt={post.title}
+                  className="max-w-full max-h-full object-contain"
+                  noSize
+                />
+              </div>
             )}
 
             <div>
